@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE hibernate-configuration PUBLIC "-//Hibernate/Hibernate Configuration DTD 3.0//EN" "http://www.hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+<hibernate-configuration>
+    <session-factory>
+        <property name="hibernate.connection.driver_class">com.microsoft.sqlserver.jdbc.SQLServerDriver</property>
+        <property name="connection.url">jdbc:sqlserver://sqlserver.wcontact.loc\MSSQLSERVER;database=PoderJudicial;encrypt=false;trustServerCertificate=false</property>
+        <property name="hibernate.connection.username">llongoria</property>
+        <property name="hibernate.connection.password">Lu1s1981</property>
+        <property name="dialect">org.hibernate.dialect.SQLServerDialect</property>
+        <property name="hibernate.show_sql">false</property>
+        <property name="hibernate.format_sql">false</property>
+        <property name="hibernate.generate_statistics">false</property>
+        <property name="hibernate.connection.charSet">UTF-8</property>
+        <property name="hibernate.connection.characterEncoding">UTF-8</property>
+        <property name="hibernate.connection.useUnicode">true</property>
+        <property name="connection.autoReconnect">true</property>
+        <property name="connection.autoReconnectForPools">true</property>
+        <property name="hibernate.validationQuery">SELECT 1 FROM DUAL</property>
+        <property name="hibernate.testOnBorrow">true</property>
+
+        <mapping class="mx.com.wcontact.poderjudicial.entity.HttpQuery"></mapping>
+        <mapping class="mx.com.wcontact.poderjudicial.entity.BulletinME"></mapping>
+        <mapping class="mx.com.wcontact.poderjudicial.entity.Judge"></mapping>
+        <mapping class="mx.com.wcontact.poderjudicial.entity.Notification"></mapping>
+
+    </session-factory>
+</hibernate-configuration>
