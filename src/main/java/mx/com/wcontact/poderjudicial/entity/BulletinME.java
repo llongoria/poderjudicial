@@ -1,5 +1,6 @@
 package mx.com.wcontact.poderjudicial.entity;
 
+import jakarta.json.JsonObject;
 import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.persistence.*;
 
@@ -14,6 +15,7 @@ import java.util.Date;
 )
 public class BulletinME implements Serializable {
 
+    private final transient java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private static final long serialVersionUID = 3L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -256,5 +258,29 @@ public class BulletinME implements Serializable {
     @Override
     public String toString() {
         return STR."Bulletin{idBulletin=\{idBulletin}, httpQueryId=\{httpQueryId}, expediente='\{expediente}\{'\''}, fechaPublicacion=\{fechaPublicacion}, fechaAcuerdo=\{fechaAcuerdo}, boletin='\{boletin}\{'\''}, tipo='\{tipo}\{'\''}, notificacion='\{notificacion}\{'\''}, di='\{di}\{'\''}, fechaResolucion=\{fechaResolucion}, claveJuicio='\{claveJuicio}\{'\''}, claveJuzgado='\{claveJuzgado}\{'\''},descripcion='\{descripcion}\{'\''}, actNames='\{actNames}\{'\''}, demNames='\{demNames}\{'\''}, fechaQuery=\{fechaQuery}, rowCreated=\{rowCreated}\{'}'}";
+    }
+
+    public JsonObject toJSON(){
+        final jakarta.json.JsonObjectBuilder objectBuilder = jakarta.json.Json.createObjectBuilder();
+        objectBuilder.add("idBulletin",getIdBulletin() );
+        objectBuilder.add("httpQueryId",getHttpQueryId() );
+        objectBuilder.add("expediente", getExpediente() );
+        objectBuilder.add("fechaPublicacion", getFechaPublicacion() != null ? sdf.format(getFechaPublicacion()) : null);
+        objectBuilder.add("fechaAcuerdo", getFechaAcuerdo() != null ? sdf.format( getFechaAcuerdo() ) : null );
+        objectBuilder.add("boletin", getBoletin() );
+        objectBuilder.add("tipo", getTipo() );
+        objectBuilder.add("notificacion", getNotificacion() );
+        objectBuilder.add("di", getDi() );
+
+        objectBuilder.add("fechaResolucion",  getFechaResolucion() != null ? sdf.format( getFechaResolucion() ): null );
+        objectBuilder.add("claveJuicio", getClaveJuicio());
+        objectBuilder.add("claveJuzgado", getClaveJuzgado());
+        objectBuilder.add("descripcion", getDescripcion() );
+        objectBuilder.add("actNames", getActNames() );
+        objectBuilder.add("demNames", getDemNames() );
+        objectBuilder.add("fechaQuery", getFechaQuery() != null? sdf.format( getFechaQuery() ) : null );
+        objectBuilder.add("rowCreated", getRowCreated() != null? sdf.format( getRowCreated() ) : null );
+
+        return objectBuilder.build();
     }
 }

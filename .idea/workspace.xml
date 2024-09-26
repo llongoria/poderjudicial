@@ -9,41 +9,24 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae3536cf-af87-42a0-a109-24e190bf8376" name="Changes" comment="">
-      <change afterPath="$PROJECT_DIR$/.gitignore" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/encodings.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/misc.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/uiDesigner.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/vcs.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.jar" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/.mvn/wrapper/maven-wrapper.properties" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvnw" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/mvnw.cmd" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/JSONKeys.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/JudgeBL.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/BulletinME.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/HttpQuery.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/Judge.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/Notification.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/filter/CrossOriginResourceSharingFilter.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/AdminRest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/BulletinRest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/JakartaApplication.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/JudgeRest.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/timer/BulletinTimer.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/CustomHttpUrlConnection.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/EmailTemplate.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/Fecha.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/HibernateUtil.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/SSMail.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/TrustAllCertificates.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/META-INF/beans.xml" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/resources/hibernate.cfg.xml" afterDir="false" />
+    <list default="true" id="ae3536cf-af87-42a0-a109-24e190bf8376" name="Changes" comment="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion.">
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/HttpQueryBL.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl/AbstractOpenSearchClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl/BulletinMeOS.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl/HttpQueryOS.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl/WCOpenSearchClient.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/Result.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/JudgeBL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/JudgeBL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/BulletinME.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/BulletinME.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/HttpQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/HttpQuery.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/Judge.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/Judge.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/AdminRest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/AdminRest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/BulletinRest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/BulletinRest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/timer/BulletinTimer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/timer/BulletinTimer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -85,6 +68,7 @@
     &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
     &quot;git-widget-placeholder&quot;: &quot;master&quot;,
     &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
+    &quot;last_opened_file_path&quot;: &quot;/Users/llongoria/JAVA/WContact/PoderJudicial/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl&quot;,
     &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
     &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
     &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
@@ -97,8 +81,15 @@
   }
 }</component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/webapp" />
+    </key>
+    <key name="CopyClassDialog.RECENTS_KEY">
+      <recent name="mx.com.wcontact.poderjudicial.opensearch.bl" />
+      <recent name="mx.com.wcontact.poderjudicial.opensearch" />
     </key>
   </component>
   <component name="RunManager">
@@ -146,8 +137,19 @@
       <workItem from="1726765880388" duration="23146000" />
       <workItem from="1726854713092" duration="19980000" />
       <workItem from="1727189569179" duration="203000" />
-      <workItem from="1727190672278" duration="240000" />
+      <workItem from="1727190672278" duration="746000" />
+      <workItem from="1727276923324" duration="8974000" />
+      <workItem from="1727316874439" duration="90000" />
     </task>
+    <task id="LOCAL-00001" summary="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion.">
+      <option name="closed" value="true" />
+      <created>1727190966182</created>
+      <option name="number" value="00001" />
+      <option name="presentableId" value="LOCAL-00001" />
+      <option name="project" value="LOCAL" />
+      <updated>1727190966182</updated>
+    </task>
+    <option name="localTasksCounter" value="2" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -155,5 +157,7 @@
   </component>
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
+    <MESSAGE value="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion." />
+    <option name="LAST_COMMIT_MESSAGE" value="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion." />
   </component>
 </project>

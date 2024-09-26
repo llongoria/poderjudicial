@@ -8,16 +8,19 @@ import jakarta.persistence.criteria.Root;
 import mx.com.wcontact.poderjudicial.entity.BulletinME;
 import mx.com.wcontact.poderjudicial.entity.HttpQuery;
 import mx.com.wcontact.poderjudicial.entity.Notification;
-import mx.com.wcontact.poderjudicial.util.CustomHttpUrlConnection;
-import mx.com.wcontact.poderjudicial.util.EmailTemplate;
-import mx.com.wcontact.poderjudicial.util.HibernateUtil;
-import mx.com.wcontact.poderjudicial.util.SSMail;
+import mx.com.wcontact.poderjudicial.opensearch.bl.BulletinMeOS;
+import mx.com.wcontact.poderjudicial.opensearch.bl.HttpQueryOS;
+import mx.com.wcontact.poderjudicial.util.*;
 import org.hibernate.Transaction;
 import org.hibernate.query.criteria.HibernateCriteriaBuilder;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.text.ParseException;
 import java.time.OffsetDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -25,11 +28,21 @@ import java.util.List;
 
 public class BulletinBL {
 
+    private static final String PATH_DIR_BULLETINERROR = "/home/llongoria/PoderJudicial/BulletinError";
     private static final org.jboss.logging.Logger log = org.jboss.logging.Logger.getLogger(BulletinBL.class.getName());
+    private final transient java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private org.hibernate.Session session;
 
     public BulletinBL(){
         session = HibernateUtil.getSessionFactory().openSession();
+    }
+
+    public BulletinBL(org.hibernate.Session session){
+        this.session = session;
+    }
+
+    public org.hibernate.Session getSession(){
+        return session;
     }
 
     public void close(){
@@ -38,15 +51,17 @@ public class BulletinBL {
         }
     }
 
-    public String runQuery(String judged, String date, String paramDate) {
+    public Result<HttpQuery> runQuery(String judged, String date, String paramDate, boolean isOpenSearchActive) {
         String url =  "bulletin/"+paramDate;
+        int resultStateHttpquery = 0;
         CustomHttpUrlConnection http = new CustomHttpUrlConnection();
+        HttpQueryBL httpQueryBL = new HttpQueryBL(this.session);
         try {
 
-            HttpQuery httpQuery = this.existsHttpQuery(judged,date);
+            HttpQuery httpQuery = httpQueryBL.existsHttpQuery(judged,date);
             if(httpQuery != null){
                 log.info("El query ya fue ejecutado");
-                return "El query ya fue ejecutado";
+                return new Result<HttpQuery>(resultStateHttpquery,httpQuery,"El query ya fue ejecutado");
             }
             httpQuery = new HttpQuery(
                     judged
@@ -61,7 +76,7 @@ public class BulletinBL {
             );
             //log.info(resp);
             if( resp == null || resp.isEmpty() ){
-                return "response url is empty";
+                return new Result<HttpQuery>(resultStateHttpquery,httpQuery,"response url is empty");
             }
             resp = resp.replaceAll("´´","");
             log.info( String.format("Obteniendo boletines del Juzgado: %s, Dia: %s", httpQuery.getJudged(), httpQuery.getDate()) );
@@ -73,22 +88,20 @@ public class BulletinBL {
                 httpQuery.setState(success);
                 httpQuery.setTotal( jsonArray.size() );
                 log.info( String.format("Lista de Boletines Obtenidos estatus=%d, Size=%d",httpQuery.getState(), jsonArray.size() ) );
-
-                Transaction transaction = session.beginTransaction();
-                session.persist(httpQuery);
-                session.flush();
-                transaction.commit();
+                Result<HttpQuery> result = httpQueryBL.save(httpQuery,isOpenSearchActive);
+                httpQuery = result.getObject();
+                resultStateHttpquery = 1;
                 if(success != 1) {
                     log.error( String.format("BulletinTimer|execute|El resultado del Query a la Pagina [%s], no fue exitoso: [%d] ", urlFormat, success ) );
                 }
             } catch(Exception ex){
                 log.error("***** BulletinTimer|execute| Falla al insertar httpQuery *****", ex);
-                return "***** BulletinTimer|execute| Falla al insertar httpQuery *****";
+                return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** BulletinTimer|execute| Falla al insertar httpQuery *****");
             }
 
             if(jsonArray==null || jsonArray.size() < 1){
                 log.error( String.format("BulletinTimer|execute|JsonArray is null a la Pagina [%s], no fue exitoso: [%d] ", urlFormat, httpQuery.getState() ) );
-                return "JSON Array is NULL";
+                return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** BulletinTimer|execute| JSON Array is NULL *****");
             }
 
             ArrayList<BulletinME> listBulletin = new ArrayList<>();
@@ -101,23 +114,23 @@ public class BulletinBL {
             log.info( String.format("Lista de Boletines Obtenidos Obtenidos de JSON Array=%d", jsonArray.size() ) );
 
             if(!listBulletin.isEmpty()) {
-                updateTableBulletin(listBulletin);
+                updateTableBulletin(listBulletin,isOpenSearchActive);
             }
 
-            return "Success: "+ listBulletin.size();
+            return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** BulletinTimer|execute| Success: "+ listBulletin.size() +" *****");
 
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException e) {
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException | ParseException e) {
             log.error(e);
         } finally {
             log.info("***** BulletinBL|execute| runQuery end *****");
         }
 
-        return "Error";
+        return new Result<HttpQuery>(resultStateHttpquery, null, "***** BulletinTimer|execute| Error *****");
 
 
     }
 
-    private void updateTableBulletin(List<BulletinME> list){
+    private void updateTableBulletin(List<BulletinME> list,  boolean isOpenSearchActive){
 
         try {
             Transaction transaction = session.beginTransaction();
@@ -126,6 +139,17 @@ public class BulletinBL {
                     session.persist(bulletin);
 
                     if(bulletin.getIdBulletin() != null && bulletin.getIdBulletin() > 0){
+
+                        if(isOpenSearchActive){
+                            BulletinMeOS bulletinMeOS = null;
+                            try {
+                                bulletinMeOS = new BulletinMeOS();
+                                bulletinMeOS.createDocument("pj-bulletin-me",bulletin);
+                            } catch(Exception ex){
+                                log.error("***** BulletinBL|updateTableBulletin| Falla al enviar los datos a Opensearch *****", ex);
+                            }
+                        }
+
                         if(bulletin.getDemNames().toUpperCase().contains("LONGORIA")
                         || bulletin.getActNames().toUpperCase().contains("LONGORIA")){
                             if( findNotification(bulletin.getIdBulletin() ) == null){
@@ -157,6 +181,7 @@ public class BulletinBL {
                     }
                 }catch(Exception ex){
                     log.error( "BulletinTimer|updateTableBulletin|Falla al ejecutar updateTableBulletin|" + bulletin.toString(), ex);
+                    WriteFileToJson(PATH_DIR_BULLETINERROR, bulletin);
                 }
             }
             transaction.commit();
@@ -166,11 +191,11 @@ public class BulletinBL {
         }
     }
 
-    public final BulletinME fromJson(jakarta.json.JsonObject jsonObject, HttpQuery httpQuery){
+    public final BulletinME fromJson(jakarta.json.JsonObject jsonObject, HttpQuery httpQuery) throws ParseException {
         final BulletinME bulletin = new BulletinME();
         final String defStr = "N/A";
         bulletin.setHttpQueryId( httpQuery.getHttpQueryId() );
-        bulletin.setFechaQuery( httpQuery.getQueryDate() );
+        bulletin.setFechaQuery( sdf.parse( httpQuery.getQueryDate() ) );
 
         for(String key: JSONKeys.ZM_MERCANTIL){
             if(jsonObject.containsKey(key) && !jsonObject.isNull(key)) {
@@ -230,22 +255,7 @@ public class BulletinBL {
         return bulletin;
     }
 
-    public HttpQuery existsHttpQuery(String judged, String date) {
 
-        HibernateCriteriaBuilder cb = session.getCriteriaBuilder();
-        jakarta.persistence.criteria.CriteriaQuery<HttpQuery> cq = cb.createQuery(HttpQuery.class);
-        Root<HttpQuery> root = cq.from(HttpQuery.class);
-
-        cq.select(root);
-        cq.where(
-                cb.and(
-                        cb.equal( root.get("judged"), judged),
-                        cb.equal( root.get("date"), date )
-                )
-        );
-        List<HttpQuery> list = session.createQuery(cq).getResultList();
-        return list.isEmpty() ? null : list.getFirst();
-    }
 
     public Notification findNotification(Long idBulletin){
         HibernateCriteriaBuilder cb = session.getCriteriaBuilder();
@@ -261,14 +271,25 @@ public class BulletinBL {
     }
 
 
-    public List<HttpQuery> findCountHttpQuery() {
-        HibernateCriteriaBuilder cb = session.getCriteriaBuilder();
-        jakarta.persistence.criteria.CriteriaQuery<HttpQuery> cq = cb.createQuery(HttpQuery.class);
-        Root<HttpQuery> root = cq.from(HttpQuery.class);
-        cq.select(root);
-        cq.where(
-                cb.greaterThan(root.get("total"), 0)
-        );
-        return session.createQuery(cq).getResultList();
+
+
+    public void WriteFileToJson(String dir, BulletinME bulletinME){
+        try {
+            String fileName = String.format("%d_%s_%s_%s.json", bulletinME.getHttpQueryId(),bulletinME.getClaveJuicio(),bulletinME.getClaveJuzgado(),bulletinME.getExpediente().replaceAll("/","-")  );
+            File file = new File(dir + "/" + fileName);
+
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+
+            FileWriter fileWritter = new FileWriter(file, false);
+            BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
+            String content = bulletinME.toJSON().toString();
+            bufferWritter.write(content);
+            bufferWritter.close();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+        }
     }
 }

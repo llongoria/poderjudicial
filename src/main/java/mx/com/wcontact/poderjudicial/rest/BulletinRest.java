@@ -10,10 +10,12 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import mx.com.wcontact.poderjudicial.bl.BulletinBL;
+import mx.com.wcontact.poderjudicial.bl.HttpQueryBL;
 import mx.com.wcontact.poderjudicial.bl.JudgeBL;
 import mx.com.wcontact.poderjudicial.entity.HttpQuery;
 import mx.com.wcontact.poderjudicial.entity.Judge;
 import mx.com.wcontact.poderjudicial.timer.BulletinTimer;
+import mx.com.wcontact.poderjudicial.util.Result;
 
 import java.util.Date;
 import java.util.List;
@@ -51,7 +53,7 @@ public class BulletinRest {
         try {
 
 
-            response = bulletinBL.runQuery(judged, date, judge.getParam() );
+            Result<HttpQuery> result = bulletinBL.runQuery(judged, date, judge.getParam(),false );
         } catch (Exception ex){
             log.error("BulletinRest|runQuery|runQuery| Error al ejecutar bulletinBL", ex);
             response = ex.getMessage();
@@ -66,9 +68,11 @@ public class BulletinRest {
     public jakarta.ws.rs.core.Response httpquery() {
 
         BulletinBL bulletinBL = null;
+        HttpQueryBL httpQueryBL = null;
         try {
             bulletinBL = new BulletinBL();
-            List<HttpQuery> countDevices = bulletinBL.findCountHttpQuery();
+            httpQueryBL = new HttpQueryBL(bulletinBL.getSession() );
+            List<HttpQuery> countDevices = httpQueryBL.findCountHttpQuery();
             JsonObject jsonObject = Json.createObjectBuilder()
                     .add("type", "httpquery")
                     .add("status", "OK")

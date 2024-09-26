@@ -28,6 +28,10 @@ public class JudgeBL {
         session = HibernateUtil.getSessionFactory().openSession();
     }
 
+    public JudgeBL(org.hibernate.Session session){
+        this.session = session;
+    }
+
     public void close(){
         if(session != null){
             session.close();

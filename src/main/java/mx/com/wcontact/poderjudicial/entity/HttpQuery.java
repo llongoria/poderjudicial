@@ -14,6 +14,8 @@ import java.util.Date;
       )
 public class HttpQuery implements Serializable {
 
+    private final transient java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     private static final long serialVersionUID = 3L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -119,24 +121,19 @@ public class HttpQuery implements Serializable {
         this.total = total;
     }
 
-    public Date getQueryDate() {
-        return queryDate;
-    }
+    public String getQueryDate() { return sdf.format(queryDate);  }
 
     public void setQueryDate(Date queryDate) {
         this.queryDate = queryDate;
     }
 
-    public Date getRowCreated() {
-        return rowCreated;
-    }
+    public String getRowCreated() { return sdf.format(rowCreated); }
 
     public void setRowCreated(Date rowCreated) {
         this.rowCreated = rowCreated;
     }
 
     public final JsonObject toJsonObj() {
-        final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         final jakarta.json.JsonObjectBuilder objectBuilder = jakarta.json.Json.createObjectBuilder();
         objectBuilder.add("httpQueryId",getHttpQueryId() );
         objectBuilder.add("judged", getJudged() );

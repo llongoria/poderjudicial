@@ -9,7 +9,9 @@ import jakarta.json.JsonObject;
 import jakarta.ws.rs.core.Response;
 import mx.com.wcontact.poderjudicial.bl.BulletinBL;
 import mx.com.wcontact.poderjudicial.bl.JudgeBL;
+import mx.com.wcontact.poderjudicial.entity.HttpQuery;
 import mx.com.wcontact.poderjudicial.entity.Judge;
+import mx.com.wcontact.poderjudicial.util.Result;
 
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -30,6 +32,9 @@ public class BulletinTimer {
     @Schedule( hour = "04", minute = "10", persistent = false)
     public void execute() {
         log.info("BulletinTimer|execute| start running");
+        System.setProperty("javax.net.ssl.trustStore", "/home/llongoria/PoderJudicial/OpenSearhIndex/keystore.p12");
+        System.setProperty("javax.net.ssl.trustStorePassword", "Lu1$1981");
+        boolean isOpenSearchActive = true;
         final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
         JudgeBL judgeBL = null;
         List<Judge> allList = null;
@@ -52,7 +57,11 @@ public class BulletinTimer {
             calendar.add(Calendar.DATE, -1);
 
             for(Judge judge : allList){
-                response = bulletinBL.runQuery(judge.getValue(), sdf.format( calendar.getTime() ), judge.getParam());
+                Result<HttpQuery> result =  bulletinBL.runQuery(
+                        judge.getValue(),
+                        sdf.format( calendar.getTime() ),
+                        judge.getParam(),
+                        isOpenSearchActive);
             }
 
 

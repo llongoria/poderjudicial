@@ -21,6 +21,7 @@ import java.util.Date;
 public class Judge implements Serializable {
 
     private static final long serialVersionUID = 3L;
+    private final transient java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -158,7 +159,6 @@ public class Judge implements Serializable {
     }
 
     public final JsonObject toJsonObj() {
-        final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         final jakarta.json.JsonObjectBuilder objectBuilder = jakarta.json.Json.createObjectBuilder();
         objectBuilder.add("idJudge",getIdJudge() );
         objectBuilder.add("value", getValue() );

@@ -11,8 +11,10 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import mx.com.wcontact.poderjudicial.bl.BulletinBL;
 import mx.com.wcontact.poderjudicial.bl.JudgeBL;
+import mx.com.wcontact.poderjudicial.entity.HttpQuery;
 import mx.com.wcontact.poderjudicial.entity.Judge;
 import mx.com.wcontact.poderjudicial.util.Fecha;
+import mx.com.wcontact.poderjudicial.util.Result;
 
 import java.time.LocalDate;
 import java.util.Date;
@@ -63,9 +65,9 @@ public class AdminRest {
             JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
             for(Judge judge: allList){
                 for(LocalDate localDate: listDates){
-                    String strResp = bulletinBL.runQuery(judge.getValue(), localDate.toString(),judge.getParam() );
+                    Result<HttpQuery> result = bulletinBL.runQuery(judge.getValue(), localDate.toString(),judge.getParam(), false );
                     try {
-                        JsonObject objResp = createJsonObject(judge.getValue(), localDate.toString(), strResp);
+                        JsonObject objResp = createJsonObject(judge.getValue(), localDate.toString(), result.getResult());
                         jsonArrayBuilder.add(objResp);
                     }catch(Exception ex){
                         log.error("AdminRest|refactorAll| Error al obtener el objResp y agregarlo al jsonArrayBuilder",ex);
