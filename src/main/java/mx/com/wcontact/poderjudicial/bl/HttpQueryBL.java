@@ -41,6 +41,9 @@ public class HttpQueryBL {
             HttpQueryOS httpQueryOS = null;
             try {
                 httpQueryOS = new HttpQueryOS();
+                if(httpQuery.getRowCreated() == null){
+                    httpQuery.setRowCreated(new java.util.Date());
+                }
                 httpQueryOS.createDocument("pj-httpquery",httpQuery);
             } catch(Exception ex){
                 log.error("***** BulletinTimer|execute| Falla al enviar los datos a Opensearch *****", ex);

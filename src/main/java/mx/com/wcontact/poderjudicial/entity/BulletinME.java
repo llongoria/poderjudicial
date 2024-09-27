@@ -5,6 +5,7 @@ import jakarta.json.bind.annotation.JsonbDateFormat;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.text.ParseException;
 import java.util.Date;
 
 @Entity
@@ -16,6 +17,7 @@ import java.util.Date;
 public class BulletinME implements Serializable {
 
     private final transient java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
     private static final long serialVersionUID = 3L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +28,10 @@ public class BulletinME implements Serializable {
     @Basic(optional = false)
     @Column(nullable = false)
     private Long httpQueryId;
+
+    @Basic(optional = false)
+    @Column(nullable = false, length = 12)
+    private String httpQueryDate;
 
     @Basic(optional = false)
     @Column(nullable = false, length = 50)
@@ -97,12 +103,15 @@ public class BulletinME implements Serializable {
     @JsonbDateFormat(value = "yyyy-MM-dd HH:mm:ss")
     private Date rowCreated;
 
-    public BulletinME() { }
+    public BulletinME() {
+    }
 
-    public BulletinME(Long httpQueryId, String expediente, Date fechaPublicacion, Date fechaAcuerdo, String boletin,
+    public BulletinME(Long httpQueryId, String httpQueryDate,  String expediente, Date fechaPublicacion, Date fechaAcuerdo, String boletin,
                       String tipo, String notificacion, String di, Date fechaResolucion, String claveJuicio, String claveJuzgado,
                       String descripcion, String actNames, String demNames, Date fechaQuery) {
+        this();
         this.httpQueryId = httpQueryId;
+        this.httpQueryDate = httpQueryDate;
         this.expediente = expediente;
         this.fechaPublicacion = fechaPublicacion;
         this.fechaAcuerdo = fechaAcuerdo;
@@ -133,6 +142,14 @@ public class BulletinME implements Serializable {
 
     public void setHttpQueryId(Long httpQueryId) {
         this.httpQueryId = httpQueryId;
+    }
+
+    public String getHttpQueryDate() {
+        return httpQueryDate;
+    }
+
+    public void setHttpQueryDate(String httpQueryDate) {
+        this.httpQueryDate = httpQueryDate;
     }
 
     public String getExpediente() {
@@ -257,29 +274,29 @@ public class BulletinME implements Serializable {
 
     @Override
     public String toString() {
-        return STR."Bulletin{idBulletin=\{idBulletin}, httpQueryId=\{httpQueryId}, expediente='\{expediente}\{'\''}, fechaPublicacion=\{fechaPublicacion}, fechaAcuerdo=\{fechaAcuerdo}, boletin='\{boletin}\{'\''}, tipo='\{tipo}\{'\''}, notificacion='\{notificacion}\{'\''}, di='\{di}\{'\''}, fechaResolucion=\{fechaResolucion}, claveJuicio='\{claveJuicio}\{'\''}, claveJuzgado='\{claveJuzgado}\{'\''},descripcion='\{descripcion}\{'\''}, actNames='\{actNames}\{'\''}, demNames='\{demNames}\{'\''}, fechaQuery=\{fechaQuery}, rowCreated=\{rowCreated}\{'}'}";
+        return STR."Bulletin{idBulletin=\{idBulletin}, httpQueryId=\{httpQueryId}, httpQueryDate=\{httpQueryDate}, expediente='\{expediente}\{'\''}, fechaPublicacion=\{fechaPublicacion}, fechaAcuerdo=\{fechaAcuerdo}, boletin='\{boletin}\{'\''}, tipo='\{tipo}\{'\''}, notificacion='\{notificacion}\{'\''}, di='\{di}\{'\''}, fechaResolucion=\{fechaResolucion}, claveJuicio='\{claveJuicio}\{'\''}, claveJuzgado='\{claveJuzgado}\{'\''},descripcion='\{descripcion}\{'\''}, actNames='\{actNames}\{'\''}, demNames='\{demNames}\{'\''}, fechaQuery=\{fechaQuery}, rowCreated=\{rowCreated}\{'}'}";
     }
 
     public JsonObject toJSON(){
         final jakarta.json.JsonObjectBuilder objectBuilder = jakarta.json.Json.createObjectBuilder();
         objectBuilder.add("idBulletin",getIdBulletin() );
         objectBuilder.add("httpQueryId",getHttpQueryId() );
+        objectBuilder.add("httpQueryDate",getHttpQueryDate() );
         objectBuilder.add("expediente", getExpediente() );
-        objectBuilder.add("fechaPublicacion", getFechaPublicacion() != null ? sdf.format(getFechaPublicacion()) : null);
-        objectBuilder.add("fechaAcuerdo", getFechaAcuerdo() != null ? sdf.format( getFechaAcuerdo() ) : null );
+        objectBuilder.add("fechaPublicacion", getFechaPublicacion() != null ? sdf.format(getFechaPublicacion()) : "1981-07-03 12:01:00");
+        objectBuilder.add("fechaAcuerdo", getFechaAcuerdo() != null ? sdf.format( getFechaAcuerdo() ) : "1981-07-03 12:01:00" );
         objectBuilder.add("boletin", getBoletin() );
         objectBuilder.add("tipo", getTipo() );
         objectBuilder.add("notificacion", getNotificacion() );
         objectBuilder.add("di", getDi() );
-
-        objectBuilder.add("fechaResolucion",  getFechaResolucion() != null ? sdf.format( getFechaResolucion() ): null );
+        objectBuilder.add("fechaResolucion",  getFechaResolucion() != null ? sdf.format( getFechaResolucion() ): "1981-07-03 12:01:00" );
         objectBuilder.add("claveJuicio", getClaveJuicio());
         objectBuilder.add("claveJuzgado", getClaveJuzgado());
         objectBuilder.add("descripcion", getDescripcion() );
         objectBuilder.add("actNames", getActNames() );
         objectBuilder.add("demNames", getDemNames() );
-        objectBuilder.add("fechaQuery", getFechaQuery() != null? sdf.format( getFechaQuery() ) : null );
-        objectBuilder.add("rowCreated", getRowCreated() != null? sdf.format( getRowCreated() ) : null );
+        objectBuilder.add("fechaQuery", getFechaQuery() != null? sdf.format( getFechaQuery() ) : "1981-07-03 12:01:00" );
+        objectBuilder.add("rowCreated", getRowCreated() != null? sdf.format( getRowCreated() ) : "1981-07-03 12:01:00" );
 
         return objectBuilder.build();
     }

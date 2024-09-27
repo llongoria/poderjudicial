@@ -21,7 +21,10 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.text.ParseException;
+import java.time.LocalDate;
 import java.time.OffsetDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -57,10 +60,9 @@ public class BulletinBL {
         CustomHttpUrlConnection http = new CustomHttpUrlConnection();
         HttpQueryBL httpQueryBL = new HttpQueryBL(this.session);
         try {
-
             HttpQuery httpQuery = httpQueryBL.existsHttpQuery(judged,date);
             if(httpQuery != null){
-                log.info("El query ya fue ejecutado");
+                log.info( String.format("***** BulletinBL|runQuery| El query Judge: %s, Date: %s, Total: %d, ya fue ejecutado.",judged,date,httpQuery.getTotal() ) );
                 return new Result<HttpQuery>(resultStateHttpquery,httpQuery,"El query ya fue ejecutado");
             }
             httpQuery = new HttpQuery(
@@ -79,7 +81,7 @@ public class BulletinBL {
                 return new Result<HttpQuery>(resultStateHttpquery,httpQuery,"response url is empty");
             }
             resp = resp.replaceAll("´´","");
-            log.info( String.format("Obteniendo boletines del Juzgado: %s, Dia: %s", httpQuery.getJudged(), httpQuery.getDate()) );
+            log.info( String.format("***** BulletinBL|runQuery| Obteniendo boletines del Juzgado: %s, Dia: %s", httpQuery.getJudged(), httpQuery.getDate()) );
             JsonArray jsonArray = null;
             try {
                 JsonObject mainObject = JsonbBuilder.create().fromJson(resp, JsonObject.class );
@@ -87,20 +89,21 @@ public class BulletinBL {
                 jsonArray = mainObject.getJsonArray("data");
                 httpQuery.setState(success);
                 httpQuery.setTotal( jsonArray.size() );
-                log.info( String.format("Lista de Boletines Obtenidos estatus=%d, Size=%d",httpQuery.getState(), jsonArray.size() ) );
+
+                log.info( String.format("***** BulletinBL|runQuery| Lista de Boletines Obtenidos estatus=%d, Size=%d",httpQuery.getState(), jsonArray.size() ) );
                 Result<HttpQuery> result = httpQueryBL.save(httpQuery,isOpenSearchActive);
                 httpQuery = result.getObject();
                 resultStateHttpquery = 1;
                 if(success != 1) {
-                    log.error( String.format("BulletinTimer|execute|El resultado del Query a la Pagina [%s], no fue exitoso: [%d] ", urlFormat, success ) );
+                    log.error( String.format("BulletinBL|runQuery|El resultado del Query a la Pagina [%s], no fue exitoso: [%d] ", urlFormat, success ) );
                 }
             } catch(Exception ex){
-                log.error("***** BulletinTimer|execute| Falla al insertar httpQuery *****", ex);
-                return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** BulletinTimer|execute| Falla al insertar httpQuery *****");
+                log.error("***** BulletinBL|runQuery| Falla al insertar httpQuery *****", ex);
+                return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** BulletinBL|runQuery| Falla al insertar httpQuery *****");
             }
 
             if(jsonArray==null || jsonArray.size() < 1){
-                log.error( String.format("BulletinTimer|execute|JsonArray is null a la Pagina [%s], no fue exitoso: [%d] ", urlFormat, httpQuery.getState() ) );
+                log.error( String.format("***** BulletinBL|runQuery| JsonArray is null a la Pagina [%s], no fue exitoso: [%d] ", urlFormat, httpQuery.getState() ) );
                 return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** BulletinTimer|execute| JSON Array is NULL *****");
             }
 
@@ -111,7 +114,7 @@ public class BulletinBL {
                 listBulletin.add( fromJson(obj, httpQuery) );
             }
 
-            log.info( String.format("Lista de Boletines Obtenidos Obtenidos de JSON Array=%d", jsonArray.size() ) );
+            log.info( String.format("***** BulletinBL|runQuery| Lista de Boletines Obtenidos Obtenidos de JSON Array=%d", jsonArray.size() ) );
 
             if(!listBulletin.isEmpty()) {
                 updateTableBulletin(listBulletin,isOpenSearchActive);
@@ -122,7 +125,7 @@ public class BulletinBL {
         } catch (IOException | NoSuchAlgorithmException | KeyManagementException | ParseException e) {
             log.error(e);
         } finally {
-            log.info("***** BulletinBL|execute| runQuery end *****");
+            log.info("***** BulletinBL|runQuery|  runQuery end *****");
         }
 
         return new Result<HttpQuery>(resultStateHttpquery, null, "***** BulletinTimer|execute| Error *****");
@@ -131,63 +134,59 @@ public class BulletinBL {
     }
 
     private void updateTableBulletin(List<BulletinME> list,  boolean isOpenSearchActive){
-
+        BulletinMeOS bulletinMeOS = isOpenSearchActive ? new BulletinMeOS() : null;
         try {
-            Transaction transaction = session.beginTransaction();
             for(BulletinME bulletin : list){
-                try {
-                    session.persist(bulletin);
-
-                    if(bulletin.getIdBulletin() != null && bulletin.getIdBulletin() > 0){
-
-                        if(isOpenSearchActive){
-                            BulletinMeOS bulletinMeOS = null;
-                            try {
-                                bulletinMeOS = new BulletinMeOS();
-                                bulletinMeOS.createDocument("pj-bulletin-me",bulletin);
-                            } catch(Exception ex){
-                                log.error("***** BulletinBL|updateTableBulletin| Falla al enviar los datos a Opensearch *****", ex);
-                            }
-                        }
-
-                        if(bulletin.getDemNames().toUpperCase().contains("LONGORIA")
-                        || bulletin.getActNames().toUpperCase().contains("LONGORIA")){
-                            if( findNotification(bulletin.getIdBulletin() ) == null){
-                                Notification notification = new Notification();
-                                notification.setDestination("llongoria@wcontact.com.mx");
-                                notification.setIdBulletin(bulletin.getIdBulletin());
-                                notification.setPattern("LONGORIA");
-                                notification.setType("EMAIL");
-                                try{
-                                    SSMail mail = new SSMail();
-                                    mail.buildMessage(
-                                            "Poder Judicial, Expediente: " + bulletin.getExpediente(),
-                                            notification.getDestination(),
-                                            EmailTemplate.Coincidencia("Boletin Poder Judicial del Estado", bulletin.getDemNames(), bulletin.getFechaPublicacion().toString(), bulletin.getFechaAcuerdo().toString(), bulletin.getExpediente(),bulletin.getBoletin(),bulletin.getActNames(), bulletin.getDemNames())
-                                    );
-                                    try {
-                                        mail.sendMessage();
-                                        notification.setSuccess(1);
-                                    } catch (MessagingException e) {
-                                        notification.setSuccess(0);
-                                    }
-
-                                } catch( Exception ex){
-                                    notification.setSuccess(0);
-                                }
-                                session.persist(notification);
-                            }
-                        }
-                    }
-                }catch(Exception ex){
-                    log.error( "BulletinTimer|updateTableBulletin|Falla al ejecutar updateTableBulletin|" + bulletin.toString(), ex);
-                    WriteFileToJson(PATH_DIR_BULLETINERROR, bulletin);
-                }
+                save(bulletin,bulletinMeOS);
             }
-            transaction.commit();
-
         } catch (Exception ex) {
             log.error( "BulletinTimer|updateTableBulletin|Falla al ejecutar updateTableBulletin", ex);
+        }
+    }
+
+    private void save(BulletinME bulletin, BulletinMeOS bulletinMeOS){
+        Transaction transaction = session.beginTransaction();
+        try {
+            session.persist(bulletin);
+            if(bulletin.getIdBulletin() != null && bulletin.getIdBulletin() > 0){
+
+                if(bulletin.getDemNames().toUpperCase().contains("LONGORIA")
+                        || bulletin.getActNames().toUpperCase().contains("LONGORIA")){
+                    if( findNotification(bulletin.getIdBulletin() ) == null){
+                        Notification notification = new Notification();
+                        notification.setDestination("llongoria@wcontact.com.mx");
+                        notification.setIdBulletin(bulletin.getIdBulletin());
+                        notification.setPattern("LONGORIA");
+                        notification.setType("EMAIL");
+                        try{
+                            SSMail mail = new SSMail();
+                            mail.buildMessage(
+                                    "Poder Judicial, Expediente: " + bulletin.getExpediente(),
+                                    notification.getDestination(),
+                                    EmailTemplate.Coincidencia("Boletin Poder Judicial del Estado", bulletin.getDemNames(), bulletin.getFechaPublicacion().toString(), bulletin.getFechaAcuerdo().toString(), bulletin.getExpediente(),bulletin.getBoletin(),bulletin.getActNames(), bulletin.getDemNames())
+                            );
+                            try {
+                                mail.sendMessage();
+                                notification.setSuccess(1);
+                            } catch (MessagingException e) {
+                                notification.setSuccess(0);
+                            }
+
+                        } catch( Exception ex){
+                            notification.setSuccess(0);
+                        }
+                        session.persist(notification);
+                    }
+                }
+
+                if(bulletinMeOS != null){
+                   // bulletinMeOS.createDocument("pj-bulletin-me",bulletin);
+                }
+            }
+        }catch(Exception ex){
+            log.error( "BulletinTimer|save|Falla al ejecutar updateTableBulletin|" + bulletin.toString(), ex);
+            transaction.rollback();
+            WriteFileToJson(PATH_DIR_BULLETINERROR, bulletin);
         }
     }
 
@@ -195,6 +194,7 @@ public class BulletinBL {
         final BulletinME bulletin = new BulletinME();
         final String defStr = "N/A";
         bulletin.setHttpQueryId( httpQuery.getHttpQueryId() );
+        bulletin.setHttpQueryDate( httpQuery.getDate() );
         bulletin.setFechaQuery( sdf.parse( httpQuery.getQueryDate() ) );
 
         for(String key: JSONKeys.ZM_MERCANTIL){
@@ -235,16 +235,31 @@ public class BulletinBL {
                         }
                         break;
                     case "FCH_PRO":
-                        OffsetDateTime odt1 = OffsetDateTime.parse(jsonObject.getString("FCH_PRO")); // "2024-09-10T00:00:00.000Z"
-                        bulletin.setFechaPublicacion(Date.from(odt1.toInstant()));
+                        String fecha1 = jsonObject.getString("FCH_PRO");
+                        if(verifyDateFormat(fecha1)) {
+                            OffsetDateTime odt1 = OffsetDateTime.parse(jsonObject.getString("FCH_PRO")); // "2024-09-10T00:00:00.000Z"
+                            bulletin.setFechaPublicacion(Date.from(odt1.toInstant()));
+                        } else {
+                            log.warn(String.format("***** BulletinBL|fromJson| Juzgado [%s], Expediente[%s], Cadena [%s], con valor: [%s] no tiene el formato [2024-09-10T00:00:00.000Z]",bulletin.getClaveJuzgado(), bulletin.getExpediente(), key, fecha1 ));
+                        }
                         break;
                     case "FCH_ACU":
-                        OffsetDateTime odt2 = OffsetDateTime.parse(jsonObject.getString("FCH_ACU"));
-                        bulletin.setFechaAcuerdo(Date.from(odt2.toInstant()));
+                        String fecha2 = jsonObject.getString("FCH_ACU");
+                        if(verifyDateFormat(fecha2)) {
+                            OffsetDateTime odt2 = OffsetDateTime.parse(jsonObject.getString("FCH_ACU"));
+                            bulletin.setFechaAcuerdo(Date.from(odt2.toInstant()));
+                        } else {
+                            log.warn(String.format("***** BulletinBL|fromJson| Juzgado [%s], Expediente[%s], Cadena [%s], con valor: [%s] no tiene el formato [2024-09-10T00:00:00.000Z]",bulletin.getClaveJuzgado(), bulletin.getExpediente(), key, fecha2 ));
+                        }
                         break;
                     case "FCH_RES":
-                        OffsetDateTime odt3 = OffsetDateTime.parse(jsonObject.getString("FCH_RES"));
-                        bulletin.setFechaResolucion( Date.from( odt3.toInstant() )  );
+                        String fecha3 = jsonObject.getString("FCH_RES");
+                        if(verifyDateFormat(fecha3)) {
+                            OffsetDateTime odt3 = OffsetDateTime.parse(jsonObject.getString("FCH_RES"));
+                            bulletin.setFechaResolucion(Date.from(odt3.toInstant()));
+                        } else {
+                            log.warn(String.format("***** BulletinBL|fromJson| Juzgado [%s], Expediente[%s], Cadena [%s], con valor: [%s] no tiene el formato [2024-09-10T00:00:00.000Z]",bulletin.getClaveJuzgado(), bulletin.getExpediente(), key, fecha3 ));
+                        }
                         break;
                     default:
                         log.warn("BulletinBL|fromJson| Cadena :" + key + ", No mapeado a un objeto");
@@ -255,13 +270,26 @@ public class BulletinBL {
         return bulletin;
     }
 
+    boolean verifyDateFormat(String dateString) {
+        if(dateString == null || dateString.isEmpty()) {
+            return false;
+        }
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
+
+        try {
+            LocalDate.parse(dateString, formatter);
+        } catch (DateTimeParseException e) {
+            return false;
+        }
+        return true;
+    }
+
 
 
     public Notification findNotification(Long idBulletin){
         HibernateCriteriaBuilder cb = session.getCriteriaBuilder();
         jakarta.persistence.criteria.CriteriaQuery<Notification> cq = cb.createQuery(Notification.class);
         Root<Notification> root = cq.from(Notification.class);
-
         cq.select(root);
         cq.where(
                 cb.equal( root.get("idBulletin"), idBulletin)

@@ -22,6 +22,8 @@ public class AbstractOpenSearchClient {
     protected String pass;
 
     protected AbstractOpenSearchClient(String user, String pass){
+        System.setProperty("javax.net.ssl.trustStore", "/home/llongoria/PoderJudicial/OpenSearhIndex/keystore.p12");
+        System.setProperty("javax.net.ssl.trustStorePassword", "Lu1$1981");
         this.user = user;
         this.pass = pass;
     }
@@ -31,7 +33,7 @@ public class AbstractOpenSearchClient {
             final HttpHost host = new HttpHost(HOSTNAME, PORT, SCHEME);
             final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             //Only for demo purposes. Don't specify your credentials in code.
-            credentialsProvider.setCredentials(new AuthScope(host), new UsernamePasswordCredentials(this.user, this.pass));
+            credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(this.user, this.pass));
 
             //Initialize the client with SSL and TLS enabled
             final RestClient restClient = RestClient.builder(host).

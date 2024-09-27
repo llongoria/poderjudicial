@@ -34,16 +34,16 @@ public class AdminRest {
     @GET
     @Path("refactorME")
     @Produces({ MediaType.APPLICATION_JSON})
-    public jakarta.ws.rs.core.Response refactorAll() {
+    public jakarta.ws.rs.core.Response refactorME() {
 
         BulletinBL bulletinBL = null;
         List<LocalDate> listDates = Fecha.getDatesBetween(initialDate, LocalDate.now() );
 
         JudgeBL judgeBL = null;
-        List<Judge> allList = null;
+        List<Judge> listJudge = null;
         try {
             judgeBL = new JudgeBL();
-            allList = judgeBL.findINvalue( ZM_MERCANTIL_VALUES );
+            listJudge = judgeBL.findINvalue( ZM_MERCANTIL_VALUES );
         } catch (Exception ex){
             log.error(ex);
             JsonObject jsonObject = Json.createObjectBuilder()
@@ -59,26 +59,26 @@ public class AdminRest {
                 judgeBL.close();
             }
         }
-
+        log.info( String.format("***** AdminRest|refactorME| Total de Juzgados Mercantiles: %d.",listJudge.size() ) );
         try {
             bulletinBL = new BulletinBL();
             JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
-            for(Judge judge: allList){
+            for(Judge judge: listJudge){
                 for(LocalDate localDate: listDates){
-                    Result<HttpQuery> result = bulletinBL.runQuery(judge.getValue(), localDate.toString(),judge.getParam(), false );
+                    Result<HttpQuery> result = bulletinBL.runQuery(judge.getValue(), localDate.toString(),judge.getParam(), true );
                     try {
                         JsonObject objResp = createJsonObject(judge.getValue(), localDate.toString(), result.getResult());
                         jsonArrayBuilder.add(objResp);
                     }catch(Exception ex){
-                        log.error("AdminRest|refactorAll| Error al obtener el objResp y agregarlo al jsonArrayBuilder",ex);
+                        log.error("AdminRest|refactorME| Error al obtener el objResp y agregarlo al jsonArrayBuilder",ex);
                     }
                 }
             }
             JsonObject jsonObject = Json.createObjectBuilder()
-                    .add("type", "refactorAll")
+                    .add("type", "refactorME")
                     .add("status", "OK")
                     .add("date", sdf.format( new Date() ) )
-                    .add("judge", allList.size() )
+                    .add("judges", listJudge.size() )
                     .add("dates", listDates.size() )
                     .add("data", jsonArrayBuilder)
                     .build();
@@ -101,8 +101,9 @@ public class AdminRest {
     }
 
     @GET
+    @Path("judgeInfo")
     @Produces({ MediaType.APPLICATION_JSON})
-    public jakarta.ws.rs.core.Response get() {
+    public jakarta.ws.rs.core.Response judgeInfo() {
 
         JudgeBL judgeBL = null;
         List<LocalDate> listDates = Fecha.getDatesBetween(initialDate, LocalDate.now() );

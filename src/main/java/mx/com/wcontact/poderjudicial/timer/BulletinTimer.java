@@ -13,8 +13,6 @@ import mx.com.wcontact.poderjudicial.entity.HttpQuery;
 import mx.com.wcontact.poderjudicial.entity.Judge;
 import mx.com.wcontact.poderjudicial.util.Result;
 
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -29,11 +27,10 @@ public class BulletinTimer {
     @Resource
     private SessionContext context;
 
-    @Schedule( hour = "04", minute = "10", persistent = false)
+    @Schedule( hour = "04", minute = "50", persistent = false)
     public void execute() {
         log.info("BulletinTimer|execute| start running");
-        System.setProperty("javax.net.ssl.trustStore", "/home/llongoria/PoderJudicial/OpenSearhIndex/keystore.p12");
-        System.setProperty("javax.net.ssl.trustStorePassword", "Lu1$1981");
+
         boolean isOpenSearchActive = true;
         final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
         JudgeBL judgeBL = null;
@@ -48,6 +45,7 @@ public class BulletinTimer {
                 judgeBL.close();
             }
         }
+        log.info("BulletinTimer|execute| Numero Total de Juzgados Encontrados: " + allList.size());
 
         BulletinBL bulletinBL = new BulletinBL();
         String response = null;

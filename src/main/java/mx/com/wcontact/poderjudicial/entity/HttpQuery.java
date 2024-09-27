@@ -121,13 +121,13 @@ public class HttpQuery implements Serializable {
         this.total = total;
     }
 
-    public String getQueryDate() { return sdf.format(queryDate);  }
+    public String getQueryDate() { return queryDate != null? sdf.format(queryDate):null;  }
 
     public void setQueryDate(Date queryDate) {
         this.queryDate = queryDate;
     }
 
-    public String getRowCreated() { return sdf.format(rowCreated); }
+    public String getRowCreated() { return rowCreated != null? sdf.format(rowCreated):null; }
 
     public void setRowCreated(Date rowCreated) {
         this.rowCreated = rowCreated;
@@ -142,8 +142,8 @@ public class HttpQuery implements Serializable {
         objectBuilder.add("url", getUrl() );
         objectBuilder.add("state", getState() );
         objectBuilder.add("total", getTotal() );
-        objectBuilder.add("queryDate", sdf.format( getQueryDate() ) );
-        objectBuilder.add("rowCreated", sdf.format( getRowCreated() ) );
+        objectBuilder.add("queryDate",  getQueryDate()   );
+        objectBuilder.add("rowCreated", getRowCreated() );
 
         return objectBuilder.build();
 

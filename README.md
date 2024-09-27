@@ -1,3 +1,33 @@
+Generar Request de certificado de usuario:
+sudo openssl req -new -key wcontact-DNS-CA.key.pem -subj "/C=MX/ST=Jalisco/L=Guadalajara/O=Web Contact/OU=Seguridad de la Informacion/CN=admin" -out admin.csr
+Generar certificado de usuario:
+sudo openssl x509 -req -in admin.csr -CA wcontact-DNS-CA.crt.pem -CAkey wcontact-DNS-CA.key.pem -CAcreateserial -sha512 -out admin.pem -days 5730
+
+Generar Request de certificado de web:
+openssl req -out opensearch.csr -newkey rsa:2048 -nodes -keyout private.key -config request.cnf
+Generar certificado de web:
+sudo openssl x509 -req -in opensearch.csr -CA wcontact-DNS-CA.crt.pem -CAkey wcontact-DNS-CA.key.pem -CAcreateserial -sha512 -out opensearch.pem -days 5730
+
+* Certificado de Servidor 
+- /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh -h opensearch.wcontact.loc -cd /etc/opensearch/opensearch-security/ -cacert /etc/opensearch/server_pki/wcontact-DNS-CA.crt.pem -cert /etc/opensearch/server_pki/opensearch.pem -key /etc/opensearch/server_pki/private.key -icl -nhnv
+* Certificado de Cliente
+- /usr/share/opensearch/plugins/opensearch-security/tools/securityadmin.sh -h opensearch.wcontact.loc -cd /etc/opensearch/opensearch-security/ -cacert /etc/opensearch/user_pki/wcontact-DNS-CA.crt.pem -cert /etc/opensearch/user_pki/admin.pem -key /etc/opensearch/user_pki/private.key -icl -nhnv
+
+Exportar certificado de usuario a keystore.p12
+Convertir a der: openssl x509 -outform der -in opensearch.pem -out opensearch.der
+Importar: keytool -import -alias opensearch.wcontact.loc -keystore keystore.p12 -file opensearch.der
+
+openssl pkcs12 -export -name admin -in admin.pem  -inkey wcontact-DNS-CA.key.pem -out keystore.p12
+
+- Fecha establecida por default e dates de opensearch: 1981-07-03 12:01:00
+
+Generar solicitud
+
+sudo openssl req -new-key private.key -subj"/C=MX/ST=Jalisco/L=Guadalajara/O=Web Contact/OU=Seguridad de la Informacion/CN=admin" -out admin.csr
+
+convertir cer to pem: openssl x509 -inform der -in admin.der -out admin.pem
+
+
 Disponible en: https://wcontact.com.mx/PoderJudicial-21
 
 Obtener listado de boletines por juzgado y fecha:

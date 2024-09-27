@@ -9,23 +9,17 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae3536cf-af87-42a0-a109-24e190bf8376" name="Changes" comment="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion.">
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/HttpQueryBL.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl/AbstractOpenSearchClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl/BulletinMeOS.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl/HttpQueryOS.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl/WCOpenSearchClient.java" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/Result.java" afterDir="false" />
+    <list default="true" id="ae3536cf-af87-42a0-a109-24e190bf8376" name="Changes" comment="PoderJudicial-21 1.0.2 20240925">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/README.md" beforeDir="false" afterPath="$PROJECT_DIR$/README.md" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/JudgeBL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/JudgeBL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/HttpQueryBL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/HttpQueryBL.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/BulletinME.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/BulletinME.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/HttpQuery.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/HttpQuery.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/Judge.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/entity/Judge.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl/AbstractOpenSearchClient.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl/AbstractOpenSearchClient.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/AdminRest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/AdminRest.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/BulletinRest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/BulletinRest.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/timer/BulletinTimer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/timer/BulletinTimer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -139,7 +133,8 @@
       <workItem from="1727189569179" duration="203000" />
       <workItem from="1727190672278" duration="746000" />
       <workItem from="1727276923324" duration="8974000" />
-      <workItem from="1727316874439" duration="90000" />
+      <workItem from="1727316874439" duration="180000" />
+      <workItem from="1727362654888" duration="14006000" />
     </task>
     <task id="LOCAL-00001" summary="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion.">
       <option name="closed" value="true" />
@@ -149,7 +144,15 @@
       <option name="project" value="LOCAL" />
       <updated>1727190966182</updated>
     </task>
-    <option name="localTasksCounter" value="2" />
+    <task id="LOCAL-00002" summary="PoderJudicial-21 1.0.2 20240925">
+      <option name="closed" value="true" />
+      <created>1727316980988</created>
+      <option name="number" value="00002" />
+      <option name="presentableId" value="LOCAL-00002" />
+      <option name="project" value="LOCAL" />
+      <updated>1727316980988</updated>
+    </task>
+    <option name="localTasksCounter" value="3" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -158,6 +161,7 @@
   <component name="VcsManagerConfiguration">
     <option name="ADD_EXTERNAL_FILES_SILENTLY" value="true" />
     <MESSAGE value="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion." />
-    <option name="LAST_COMMIT_MESSAGE" value="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion." />
+    <MESSAGE value="PoderJudicial-21 1.0.2 20240925" />
+    <option name="LAST_COMMIT_MESSAGE" value="PoderJudicial-21 1.0.2 20240925" />
   </component>
 </project>
