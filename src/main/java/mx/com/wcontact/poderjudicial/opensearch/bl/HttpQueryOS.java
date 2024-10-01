@@ -1,6 +1,7 @@
 package mx.com.wcontact.poderjudicial.opensearch.bl;
 
 import mx.com.wcontact.poderjudicial.entity.HttpQuery;
+import mx.com.wcontact.poderjudicial.listener.PJContextListener;
 import org.opensearch.client.opensearch.core.BulkRequest;
 import org.opensearch.client.opensearch.core.BulkResponse;
 import org.opensearch.client.opensearch.core.DeleteResponse;
@@ -18,7 +19,11 @@ public final class HttpQueryOS {
     WCOpenSearchClient<HttpQuery> wcOpenSearch;
 
     public HttpQueryOS() {
-        wcOpenSearch = new WCOpenSearchClient<HttpQuery>(HttpQuery.class, "admin", "admin");
+        wcOpenSearch = new WCOpenSearchClient<HttpQuery>(
+                HttpQuery.class,
+                PJContextListener.getCfg().getOpenSearchUser(),
+                PJContextListener.getCfg().getOpenSearchPassword()
+        );
     }
 
     public void close(){

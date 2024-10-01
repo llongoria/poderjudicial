@@ -6,6 +6,7 @@ import jakarta.mail.Session;
 import jakarta.mail.internet.InternetAddress;
 import jakarta.mail.internet.MimeMessage;
 import mx.com.wcontact.poderjudicial.bl.BulletinBL;
+import mx.com.wcontact.poderjudicial.listener.PJContextListener;
 
 import java.util.Properties;
 
@@ -13,16 +14,18 @@ public class SSMail {
 
     private static final org.jboss.logging.Logger log = org.jboss.logging.Logger.getLogger(BulletinBL.class.getName());
 
-    final String username = "comercial@wcontact.com.mx";
-    final String password = "bbmrnyzamjfxmrwj";
+    private String username;
+    private String password;
     Properties prop = new Properties();
     private Message message = null;
 
     public SSMail() {
-        prop.put("mail.smtp.host", "smtp.gmail.com");
-        prop.put("mail.smtp.port", "587");
-        prop.put("mail.smtp.auth", "true");
-        prop.put("mail.smtp.starttls.enable", "true"); //TLS
+        username = PJContextListener.getCfg().getMailUser();
+        password = PJContextListener.getCfg().getMailPassword();
+        prop.put("mail.smtp.host", PJContextListener.getCfg().getMailSmtpHost());
+        prop.put("mail.smtp.port", PJContextListener.getCfg().getMailSmtpPort());
+        prop.put("mail.smtp.auth", PJContextListener.getCfg().isMailSmtpAuth());
+        prop.put("mail.smtp.starttls.enable", PJContextListener.getCfg().isMailUseSsl()); //TLS
     }
 
 
@@ -40,7 +43,7 @@ public class SSMail {
             this.message = new MimeMessage(session);
             this.message.setFrom(new InternetAddress(username)); // reemplazar con tu correo de Gmail
             this.message.setRecipients( Message.RecipientType.TO, InternetAddress.parse(mailTo)  );
-            this.message.setRecipients( Message.RecipientType.BCC, InternetAddress.parse("llongoria@wcontact.com.mx") );
+            this.message.setRecipients( Message.RecipientType.BCC, InternetAddress.parse( PJContextListener.getCfg().getMailFrom()) );
             this.message.setSubject(subject);
             this.message.setContent(htmlContent, "text/html");
 

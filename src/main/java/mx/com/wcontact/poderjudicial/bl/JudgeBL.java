@@ -4,7 +4,6 @@ import jakarta.json.JsonArray;
 import jakarta.json.JsonObject;
 import jakarta.json.bind.JsonbBuilder;
 import jakarta.persistence.criteria.Root;
-import mx.com.wcontact.poderjudicial.entity.HttpQuery;
 import mx.com.wcontact.poderjudicial.entity.Judge;
 import mx.com.wcontact.poderjudicial.util.CustomHttpUrlConnection;
 import mx.com.wcontact.poderjudicial.util.HibernateUtil;
@@ -16,7 +15,6 @@ import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 public class JudgeBL {
@@ -115,12 +113,12 @@ public class JudgeBL {
         return session.createQuery(cq).getResultList();
     }
 
-    public List<Judge> findINvalue(String[] values){
+    public List<Judge> findINvalue(Object[] columns){
         HibernateCriteriaBuilder cb = session.getCriteriaBuilder();
         jakarta.persistence.criteria.CriteriaQuery<Judge> cq = cb.createQuery(Judge.class);
         Root<Judge> root = cq.from(Judge.class);
         cq.select(root);
-        cq.where(root.get("value").in(values));
+        cq.where(root.get("value").in(columns));
         return session.createQuery(cq).getResultList();
     }
 

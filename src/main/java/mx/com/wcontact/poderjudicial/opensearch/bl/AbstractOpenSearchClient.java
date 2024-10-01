@@ -1,5 +1,6 @@
 package mx.com.wcontact.poderjudicial.opensearch.bl;
 
+import mx.com.wcontact.poderjudicial.listener.PJContextListener;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
 import org.apache.http.auth.UsernamePasswordCredentials;
@@ -14,23 +15,26 @@ import org.opensearch.client.transport.rest_client.RestClientTransport;
 
 public class AbstractOpenSearchClient {
 
-    public static final String HOSTNAME = "opensearch.wcontact.loc";
-    public static final int PORT = 9200;
-    public static final String SCHEME = "https";
+    private String scheme = "https";
+    private String hostname = "opensearch.wcontact.loc";
+    private int port = 9200;
     protected OpenSearchClient _Client;
     protected String user;
     protected String pass;
 
     protected AbstractOpenSearchClient(String user, String pass){
-        System.setProperty("javax.net.ssl.trustStore", "/home/llongoria/PoderJudicial/OpenSearhIndex/keystore.p12");
-        System.setProperty("javax.net.ssl.trustStorePassword", "Lu1$1981");
-        this.user = user;
-        this.pass = pass;
+        System.setProperty("javax.net.ssl.trustStore", PJContextListener.getCfg().getKeystore());
+        System.setProperty("javax.net.ssl.trustStorePassword", PJContextListener.getCfg().getKeystorePassword());
+        this.scheme =  PJContextListener.getCfg().getOpenSearchScheme();
+        this.hostname = PJContextListener.getCfg().getOpenSearchHostname();
+        this.port = PJContextListener.getCfg().getOpenSearchPort();
+        this.user = PJContextListener.getCfg().getOpenSearchUser();
+        this.pass = PJContextListener.getCfg().getOpenSearchPassword();
     }
 
     protected OpenSearchClient cleateClient() throws Exception {
         if(_Client == null) {
-            final HttpHost host = new HttpHost(HOSTNAME, PORT, SCHEME);
+            final HttpHost host = new HttpHost(hostname, port, scheme);
             final BasicCredentialsProvider credentialsProvider = new BasicCredentialsProvider();
             //Only for demo purposes. Don't specify your credentials in code.
             credentialsProvider.setCredentials(AuthScope.ANY, new UsernamePasswordCredentials(this.user, this.pass));

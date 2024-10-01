@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="ISO-8859-1" ?>
+<config>
+    <version>1.0.4.20240930</version>
+    <publicacion>produccion</publicacion>
+    <debug_enable>true</debug_enable>
+    <timeZoneId>America/Mexico_City</timeZoneId>
+
+    <mail>
+        <from>comercial@wcontact.com.mx</from>
+        <smtp_host>smtp.gmail.com</smtp_host>
+        <smtp_port>587</smtp_port>
+        <smtp_user>smtp.gmail.com</smtp_user>
+        <smtp_pass>bbmrnyzamjfxmrwj</smtp_pass>
+        <smtp_auth>true</smtp_auth>
+        <use_ssl>true</use_ssl>
+        <mail_subject>Poder Judicial, Expediente:</mail_subject>
+        <mail_template_title>Boletin Poder Judicial del Estado</mail_template_title>
+    </mail>
+    <send_mail_pattern>
+        <pattern>LONGORIA</pattern>
+        <pattern>LARIOS VELAZQUEZ</pattern>
+    </send_mail_pattern>
+    <opensearch>
+        <user>admin</user>
+        <password>admin</password>
+        <scheme>https</scheme>
+        <hostname>opensearch.wcontact.loc</hostname>
+        <port>9200</port>
+        <indexOpenSearch>true</indexOpenSearch>
+        <trustStore>/home/llongoria/PoderJudicial/OpenSearhIndex/keystore.p12</trustStore>
+        <trustStore_password>Lu1$1981</trustStore_password>
+    </opensearch>
+</config>

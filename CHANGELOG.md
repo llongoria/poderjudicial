@@ -1,13 +1,13 @@
-### PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion.
+### PoderJudicial-21 1.0.1.20240924 Primera Version ingresada a produccion.
 1. Version funcional en operacion en servidor: https://api.wcontact.loc:8443/PoderJudicial-21/
 
-### PoderJudicial-21 1.0.2 20240925 
+### PoderJudicial-21 1.0.2.20240925 
 1. Se modifica SimpleTextForma para ser trasient.
 2. Se agregan al archivo pom.xml las librerias de opensearch.
 3. Se agrega la conexion de opensearch a los indeces pj-bulletin-me y pj-httpquery.
 4. Se agrega la escritura de archivos en caso de falla en la ruta: /home/llongoria/PoderJudicial/BulletinError
 
-### PoderJudicial-21 1.0.3 20240926
+### PoderJudicial-21 1.0.3.20240926
 1. Se corrige el error:
 
 ```
@@ -22,3 +22,9 @@ Caused by: com.fasterxml.jackson.databind.JsonMappingException: date must not be
 Caused by: java.lang.NullPointerException: date must not be null
 ```
 
+### PoderJudicial-21 1.0.4.20240930
+1. Se migra la configuracion al archivo pj_config.xml.
+2. Se agregar PJContextListener;
+3. Se agrega index.jsp.
+4. Se agrega jboss-web.xml
+5. Se modifica el uso de los parametros para ser leidos desde ServerConfig.

@@ -1,6 +1,7 @@
 package mx.com.wcontact.poderjudicial.opensearch.bl;
 
 import mx.com.wcontact.poderjudicial.entity.BulletinME;
+import mx.com.wcontact.poderjudicial.listener.PJContextListener;
 import org.opensearch.client.opensearch.core.BulkRequest;
 import org.opensearch.client.opensearch.core.BulkResponse;
 import org.opensearch.client.opensearch.core.DeleteResponse;
@@ -17,7 +18,10 @@ public class BulletinMeOS {
 WCOpenSearchClient<BulletinME> wcOpenSearch;
 
 public BulletinMeOS() {
-    wcOpenSearch = new WCOpenSearchClient<BulletinME>(BulletinME.class, "admin", "admin");
+    wcOpenSearch = new WCOpenSearchClient<BulletinME>(BulletinME.class
+            , PJContextListener.getCfg().getOpenSearchUser()
+            , PJContextListener.getCfg().getOpenSearchPassword()
+    );
 }
 
 public void close(){

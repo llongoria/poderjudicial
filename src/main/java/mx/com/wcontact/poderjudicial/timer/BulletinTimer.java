@@ -11,6 +11,7 @@ import mx.com.wcontact.poderjudicial.bl.BulletinBL;
 import mx.com.wcontact.poderjudicial.bl.JudgeBL;
 import mx.com.wcontact.poderjudicial.entity.HttpQuery;
 import mx.com.wcontact.poderjudicial.entity.Judge;
+import mx.com.wcontact.poderjudicial.listener.PJContextListener;
 import mx.com.wcontact.poderjudicial.util.Result;
 
 import java.util.Calendar;
@@ -59,7 +60,7 @@ public class BulletinTimer {
                         judge.getValue(),
                         sdf.format( calendar.getTime() ),
                         judge.getParam(),
-                        isOpenSearchActive);
+                        PJContextListener.getCfg().isIndexOpenSearch() );
             }
 
 
@@ -68,7 +69,6 @@ public class BulletinTimer {
             response = ex.getMessage();
 
         } finally {
-            bulletinBL.close();
             log.info(STR."BulletinTimer|execute|response| \{response}");
         }
     }

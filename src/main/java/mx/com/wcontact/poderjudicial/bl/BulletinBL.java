@@ -8,8 +8,8 @@ import jakarta.persistence.criteria.Root;
 import mx.com.wcontact.poderjudicial.entity.BulletinME;
 import mx.com.wcontact.poderjudicial.entity.HttpQuery;
 import mx.com.wcontact.poderjudicial.entity.Notification;
+import mx.com.wcontact.poderjudicial.listener.PJContextListener;
 import mx.com.wcontact.poderjudicial.opensearch.bl.BulletinMeOS;
-import mx.com.wcontact.poderjudicial.opensearch.bl.HttpQueryOS;
 import mx.com.wcontact.poderjudicial.util.*;
 import org.hibernate.Transaction;
 import org.hibernate.query.criteria.HibernateCriteriaBuilder;
@@ -26,39 +26,47 @@ import java.time.OffsetDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 public class BulletinBL {
 
     private static final String PATH_DIR_BULLETINERROR = "/home/llongoria/PoderJudicial/BulletinError";
     private static final org.jboss.logging.Logger log = org.jboss.logging.Logger.getLogger(BulletinBL.class.getName());
     private final transient java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private org.hibernate.Session session;
 
-    public BulletinBL(){
-        session = HibernateUtil.getSessionFactory().openSession();
-    }
+    private org.hibernate.Session hibernateSession;
 
-    public BulletinBL(org.hibernate.Session session){
-        this.session = session;
+    public BulletinBL(){}
+
+
+    public org.hibernate.Transaction createTransaction() {
+        return getSession().beginTransaction();
     }
 
     public org.hibernate.Session getSession(){
-        return session;
+        if ( hibernateSession == null || !hibernateSession.isOpen()){
+            hibernateSession = HibernateUtil.getSessionFactory().openSession();
+        }
+        return hibernateSession;
     }
 
     public void close(){
-        if(session != null){
-            session.close();
+        if( hibernateSession != null){
+            hibernateSession.close();
+            hibernateSession = null;
         }
     }
+
+
 
     public Result<HttpQuery> runQuery(String judged, String date, String paramDate, boolean isOpenSearchActive) {
         String url =  "bulletin/"+paramDate;
         int resultStateHttpquery = 0;
         CustomHttpUrlConnection http = new CustomHttpUrlConnection();
-        HttpQueryBL httpQueryBL = new HttpQueryBL(this.session);
+        HttpQueryBL httpQueryBL = new HttpQueryBL();
         try {
             HttpQuery httpQuery = httpQueryBL.existsHttpQuery(judged,date);
             if(httpQuery != null){
@@ -145,25 +153,30 @@ public class BulletinBL {
     }
 
     private void save(BulletinME bulletin, BulletinMeOS bulletinMeOS){
-        Transaction transaction = session.beginTransaction();
+        Transaction transaction = createTransaction();
         try {
-            session.persist(bulletin);
+            getSession().persist(bulletin);
             if(bulletin.getIdBulletin() != null && bulletin.getIdBulletin() > 0){
 
-                if(bulletin.getDemNames().toUpperCase().contains("LONGORIA")
-                        || bulletin.getActNames().toUpperCase().contains("LONGORIA")){
+                if( checkPattern(
+                        PJContextListener.getCfg().getSendMailPatterns(),
+                        new String[]{ bulletin.getDemNames().toUpperCase(), bulletin.getActNames().toUpperCase() }
+                    ) ){
                     if( findNotification(bulletin.getIdBulletin() ) == null){
                         Notification notification = new Notification();
                         notification.setDestination("llongoria@wcontact.com.mx");
                         notification.setIdBulletin(bulletin.getIdBulletin());
-                        notification.setPattern("LONGORIA");
+                        notification.setPattern(
+                                PJContextListener.getCfg().getSendMailPatterns().stream()
+                                        .collect(Collectors.joining(", "))
+                        );
                         notification.setType("EMAIL");
                         try{
                             SSMail mail = new SSMail();
                             mail.buildMessage(
-                                    "Poder Judicial, Expediente: " + bulletin.getExpediente(),
+                                    PJContextListener.getCfg().getMailSubject() + bulletin.getExpediente(),
                                     notification.getDestination(),
-                                    EmailTemplate.Coincidencia("Boletin Poder Judicial del Estado", bulletin.getDemNames(), bulletin.getFechaPublicacion().toString(), bulletin.getFechaAcuerdo().toString(), bulletin.getExpediente(),bulletin.getBoletin(),bulletin.getActNames(), bulletin.getDemNames())
+                                    EmailTemplate.Coincidencia(PJContextListener.getCfg().getMailTemplateTitle(), bulletin.getDemNames(), bulletin.getFechaPublicacion().toString(), bulletin.getFechaAcuerdo().toString(), bulletin.getExpediente(),bulletin.getBoletin(),bulletin.getActNames(), bulletin.getDemNames())
                             );
                             try {
                                 mail.sendMessage();
@@ -175,18 +188,23 @@ public class BulletinBL {
                         } catch( Exception ex){
                             notification.setSuccess(0);
                         }
-                        session.persist(notification);
+                        getSession().persist(notification);
                     }
                 }
 
                 if(bulletinMeOS != null){
-                   // bulletinMeOS.createDocument("pj-bulletin-me",bulletin);
+                    bulletinMeOS.createDocument("pj-bulletin-me",bulletin);
                 }
+                transaction.commit();
+                return;
             }
+            transaction.rollback();
         }catch(Exception ex){
             log.error( "BulletinTimer|save|Falla al ejecutar updateTableBulletin|" + bulletin.toString(), ex);
             transaction.rollback();
-            WriteFileToJson(PATH_DIR_BULLETINERROR, bulletin);
+            WriteFileToJson(PATH_DIR_BULLETINERROR, bulletin, ex);
+        } finally {
+            getSession().close();
         }
     }
 
@@ -287,22 +305,40 @@ public class BulletinBL {
 
 
     public Notification findNotification(Long idBulletin){
-        HibernateCriteriaBuilder cb = session.getCriteriaBuilder();
-        jakarta.persistence.criteria.CriteriaQuery<Notification> cq = cb.createQuery(Notification.class);
-        Root<Notification> root = cq.from(Notification.class);
-        cq.select(root);
-        cq.where(
-                cb.equal( root.get("idBulletin"), idBulletin)
-        );
-        List<Notification> list = session.createQuery(cq).getResultList();
+        List<Notification> list = null;
+        try {
+            HibernateCriteriaBuilder cb = getSession().getCriteriaBuilder();
+            jakarta.persistence.criteria.CriteriaQuery<Notification> cq = cb.createQuery(Notification.class);
+            Root<Notification> root = cq.from(Notification.class);
+            cq.select(root);
+            cq.where(
+                    cb.equal(root.get("idBulletin"), idBulletin)
+            );
+            list = getSession().createQuery(cq).getResultList();
+        } finally {
+            close();
+        }
         return list.isEmpty() ? null : list.getFirst();
+    }
+
+    public boolean checkPattern(List<String> patterns, String[] data){
+        List<String> datas = Arrays.stream(data).toList();
+        for(String ele: datas){
+            for(String pattern: patterns){
+                if(ele.contains(pattern)){
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
 
 
 
-    public void WriteFileToJson(String dir, BulletinME bulletinME){
+    public void WriteFileToJson(String dir, BulletinME bulletinME,Exception e){
         try {
+            final jakarta.json.JsonObjectBuilder objectBuilder = jakarta.json.Json.createObjectBuilder();
             String fileName = String.format("%d_%s_%s_%s.json", bulletinME.getHttpQueryId(),bulletinME.getClaveJuicio(),bulletinME.getClaveJuzgado(),bulletinME.getExpediente().replaceAll("/","-")  );
             File file = new File(dir + "/" + fileName);
 
@@ -312,8 +348,11 @@ public class BulletinBL {
 
             FileWriter fileWritter = new FileWriter(file, false);
             BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
-            String content = bulletinME.toJSON().toString();
-            bufferWritter.write(content);
+            objectBuilder.add("exceptionMessage", e.getMessage() );
+            objectBuilder.add("fileName", file.getName() );
+            objectBuilder.add("bulletin",bulletinME.toJSON() );
+
+            bufferWritter.write( objectBuilder.build().toString() );
             bufferWritter.close();
 
         } catch (Exception ex) {

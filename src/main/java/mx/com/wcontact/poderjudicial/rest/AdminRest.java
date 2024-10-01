@@ -13,6 +13,7 @@ import mx.com.wcontact.poderjudicial.bl.BulletinBL;
 import mx.com.wcontact.poderjudicial.bl.JudgeBL;
 import mx.com.wcontact.poderjudicial.entity.HttpQuery;
 import mx.com.wcontact.poderjudicial.entity.Judge;
+import mx.com.wcontact.poderjudicial.listener.PJContextListener;
 import mx.com.wcontact.poderjudicial.util.Fecha;
 import mx.com.wcontact.poderjudicial.util.Result;
 
@@ -30,6 +31,15 @@ public class AdminRest {
     protected final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final LocalDate initialDate = LocalDate.of(2024,5,25);
+
+    @GET
+    @Produces({ MediaType.APPLICATION_JSON})
+    public jakarta.ws.rs.core.Response info(){
+
+        return Response.status( Response.Status.OK.getStatusCode(),
+                "OK"
+        ).entity(PJContextListener.getCfg().toJson()).build();
+    }
 
     @GET
     @Path("refactorME")
@@ -65,7 +75,7 @@ public class AdminRest {
             JsonArrayBuilder jsonArrayBuilder = Json.createArrayBuilder();
             for(Judge judge: listJudge){
                 for(LocalDate localDate: listDates){
-                    Result<HttpQuery> result = bulletinBL.runQuery(judge.getValue(), localDate.toString(),judge.getParam(), true );
+                    Result<HttpQuery> result = bulletinBL.runQuery(judge.getValue(), localDate.toString(),judge.getParam(), PJContextListener.getCfg().isIndexOpenSearch());
                     try {
                         JsonObject objResp = createJsonObject(judge.getValue(), localDate.toString(), result.getResult());
                         jsonArrayBuilder.add(objResp);
@@ -94,9 +104,6 @@ public class AdminRest {
                     ex.getMessage()
             ).entity(jsonObject).build();
         } finally {
-            if(bulletinBL != null){
-                bulletinBL.close();
-            }
         }
     }
 
