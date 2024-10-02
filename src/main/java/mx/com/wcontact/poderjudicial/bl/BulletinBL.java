@@ -111,8 +111,8 @@ public class BulletinBL {
             }
 
             if(jsonArray==null || jsonArray.size() < 1){
-                log.error( String.format("***** BulletinBL|runQuery| JsonArray is null a la Pagina [%s], no fue exitoso: [%d] ", urlFormat, httpQuery.getState() ) );
-                return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** BulletinTimer|execute| JSON Array is NULL *****");
+                log.error( String.format("***** BulletinBL|runQuery| No existen boletines en la siguiente liga: [%s], estatus: [%d] ", urlFormat, httpQuery.getState() ) );
+                return new Result<HttpQuery>(resultStateHttpquery, httpQuery, String.format("***** BulletinBL|runQuery| No existen boletines en la siguiente liga: [%s], estatus: [%d] ", urlFormat, httpQuery.getState() ));
             }
 
             ArrayList<BulletinME> listBulletin = new ArrayList<>();
