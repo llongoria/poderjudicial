@@ -30,7 +30,7 @@ public class BulletinTimer {
 
     @Schedule( hour = "04", minute = "50", persistent = false)
     public void execute() {
-        log.info("BulletinTimer|execute| start running");
+        log.info("****************** execute| start running ******************");
 
         boolean isOpenSearchActive = true;
         final java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd");
@@ -46,10 +46,12 @@ public class BulletinTimer {
                 judgeBL.close();
             }
         }
-        log.info("BulletinTimer|execute| Numero Total de Juzgados Encontrados: " + allList.size());
+        log.info("execute| Numero Total de Juzgados Encontrados: " + allList.size());
 
         BulletinBL bulletinBL = new BulletinBL();
-        String response = null;
+
+        int state0 = 0;
+        int state1 = 0;
         try {
             Calendar calendar = Calendar.getInstance();
             calendar.setTime(new Date());
@@ -61,15 +63,18 @@ public class BulletinTimer {
                         sdf.format( calendar.getTime() ),
                         judge.getParam(),
                         PJContextListener.getCfg().isIndexOpenSearch() );
+                if(result.getState() == 1)
+                    state1++;
+                else state0 ++;
             }
 
 
         } catch (Exception ex){
-            log.error("BulletinTimer|execute| Error al ejecutar bulletinBL", ex);
-            response = ex.getMessage();
+            log.error("execute| Error al ejecutar bulletinBL", ex);
+
 
         } finally {
-            log.info(STR."BulletinTimer|execute|response| \{response}");
+            log.info(STR."****************** execute| end running, State0: \{state0}, State1: \{state1} ******************");
         }
     }
 

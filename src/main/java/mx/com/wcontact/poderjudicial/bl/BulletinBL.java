@@ -70,7 +70,7 @@ public class BulletinBL {
         try {
             HttpQuery httpQuery = httpQueryBL.existsHttpQuery(judged,date);
             if(httpQuery != null){
-                log.info( String.format("***** BulletinBL|runQuery| El query Judge: %s, Date: %s, Total: %d, ya fue ejecutado.",judged,date,httpQuery.getTotal() ) );
+                log.info( String.format("***** runQuery| El query Judge: %s, Date: %s, Total: %d, ya fue ejecutado.",judged,date,httpQuery.getTotal() ) );
                 return new Result<HttpQuery>(resultStateHttpquery,httpQuery,"El query ya fue ejecutado");
             }
             httpQuery = new HttpQuery(
@@ -89,7 +89,7 @@ public class BulletinBL {
                 return new Result<HttpQuery>(resultStateHttpquery,httpQuery,"response url is empty");
             }
             resp = resp.replaceAll("´´","");
-            log.info( String.format("***** BulletinBL|runQuery| Obteniendo boletines del Juzgado: %s, Dia: %s", httpQuery.getJudged(), httpQuery.getDate()) );
+            log.info( String.format("***** runQuery| Obteniendo boletines del Juzgado: %s, Dia: %s", httpQuery.getJudged(), httpQuery.getDate()) );
             JsonArray jsonArray = null;
             try {
                 JsonObject mainObject = JsonbBuilder.create().fromJson(resp, JsonObject.class );
@@ -98,21 +98,21 @@ public class BulletinBL {
                 httpQuery.setState(success);
                 httpQuery.setTotal( jsonArray.size() );
 
-                log.info( String.format("***** BulletinBL|runQuery| Lista de Boletines Obtenidos estatus=%d, Size=%d",httpQuery.getState(), jsonArray.size() ) );
+                log.info( String.format("***** runQuery| Lista de Boletines Obtenidos estatus=%d, Size=%d",httpQuery.getState(), jsonArray.size() ) );
                 Result<HttpQuery> result = httpQueryBL.save(httpQuery,isOpenSearchActive);
                 httpQuery = result.getObject();
                 resultStateHttpquery = 1;
                 if(success != 1) {
-                    log.error( String.format("BulletinBL|runQuery|El resultado del Query a la Pagina [%s], no fue exitoso: [%d] ", urlFormat, success ) );
+                    log.error( String.format("runQuery|El resultado del Query a la Pagina [%s], no fue exitoso: [%d] ", urlFormat, success ) );
                 }
             } catch(Exception ex){
-                log.error("***** BulletinBL|runQuery| Falla al insertar httpQuery *****", ex);
-                return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** BulletinBL|runQuery| Falla al insertar httpQuery *****");
+                log.error("***** runQuery| Falla al insertar httpQuery *****", ex);
+                return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** runQuery| Falla al insertar httpQuery *****");
             }
 
             if(jsonArray==null || jsonArray.size() < 1){
-                log.error( String.format("***** BulletinBL|runQuery| No existen boletines en la siguiente liga: [%s], estatus: [%d] ", urlFormat, httpQuery.getState() ) );
-                return new Result<HttpQuery>(resultStateHttpquery, httpQuery, String.format("***** BulletinBL|runQuery| No existen boletines en la siguiente liga: [%s], estatus: [%d] ", urlFormat, httpQuery.getState() ));
+                log.error( String.format("***** runQuery| No existen boletines en la siguiente liga: [%s], estatus: [%d] ", urlFormat, httpQuery.getState() ) );
+                return new Result<HttpQuery>(resultStateHttpquery, httpQuery, String.format("***** runQuery| No existen boletines en la siguiente liga: [%s], estatus: [%d] ", urlFormat, httpQuery.getState() ));
             }
 
             ArrayList<BulletinME> listBulletin = new ArrayList<>();
@@ -122,21 +122,20 @@ public class BulletinBL {
                 listBulletin.add( fromJson(obj, httpQuery) );
             }
 
-            log.info( String.format("***** BulletinBL|runQuery| Lista de Boletines Obtenidos Obtenidos de JSON Array=%d", jsonArray.size() ) );
+            log.info( String.format("***** runQuery| Lista de Boletines Obtenidos Obtenidos de JSON Array=%d", jsonArray.size() ) );
 
             if(!listBulletin.isEmpty()) {
                 updateTableBulletin(listBulletin,isOpenSearchActive);
             }
 
-            return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** BulletinTimer|execute| Success: "+ listBulletin.size() +" *****");
+            return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** runQuery| Success: "+ listBulletin.size() +" *****");
 
         } catch (IOException | NoSuchAlgorithmException | KeyManagementException | ParseException e) {
             log.error(e);
         } finally {
-            log.info("***** BulletinBL|runQuery|  runQuery end *****");
+            log.info("***** runQuery|  runQuery end *****");
         }
-
-        return new Result<HttpQuery>(resultStateHttpquery, null, "***** BulletinTimer|execute| Error *****");
+        return new Result<HttpQuery>(resultStateHttpquery, null, "***** runQuery| Error *****");
 
 
     }
@@ -148,7 +147,7 @@ public class BulletinBL {
                 save(bulletin,bulletinMeOS);
             }
         } catch (Exception ex) {
-            log.error( "BulletinTimer|updateTableBulletin|Falla al ejecutar updateTableBulletin", ex);
+            log.error( "updateTableBulletin| Falla al ejecutar updateTableBulletin", ex);
         }
     }
 
@@ -199,8 +198,8 @@ public class BulletinBL {
                 return;
             }
             transaction.rollback();
-        }catch(Exception ex){
-            log.error( "BulletinTimer|save|Falla al ejecutar updateTableBulletin|" + bulletin.toString(), ex);
+        } catch(Exception ex){
+            log.error( "save| Falla al ejecutar updateTableBulletin|" + bulletin.toString(), ex);
             transaction.rollback();
             WriteFileToJson(PATH_DIR_BULLETINERROR, bulletin, ex);
         } finally {
@@ -210,7 +209,6 @@ public class BulletinBL {
 
     public final BulletinME fromJson(jakarta.json.JsonObject jsonObject, HttpQuery httpQuery) throws ParseException {
         final BulletinME bulletin = new BulletinME();
-        final String defStr = "N/A";
         bulletin.setHttpQueryId( httpQuery.getHttpQueryId() );
         bulletin.setHttpQueryDate( httpQuery.getDate() );
         bulletin.setFechaQuery( sdf.parse( httpQuery.getQueryDate() ) );
@@ -222,7 +220,10 @@ public class BulletinBL {
                         bulletin.setExpediente(jsonObject.getString("EXP"));
                         break;
                     case "BOLETIN":
-                        bulletin.setBoletin(jsonObject.getString("BOLETIN"));
+                        bulletin.setBoletin(
+                                ( jsonObject.getString("BOLETIN") != null ? jsonObject.getString("BOLETIN").toUpperCase()
+                                        : jsonObject.getString("BOLETIN") )
+                        );
                         break;
                     case "TIPO":
                         bulletin.setTipo(jsonObject.getString("TIPO"));
@@ -243,13 +244,17 @@ public class BulletinBL {
                         bulletin.setDescripcion(jsonObject.getString("DESCRIP"));
                         break;
                     case "act_names":
-                        bulletin.setActNames(jsonObject.getString("act_names"));
+                        try {
+                            bulletin.setActNames(jsonObject.getString("act_names").toUpperCase());
+                        }catch(Exception ex){
+                            log.warn("***** fromJson| act_names no pudo ser convertido a String, Objeto= " + jsonObject.toString() );
+                        }
                         break;
                     case "dem_names":
                         try {
-                            bulletin.setDemNames(jsonObject.getString("dem_names"));
+                            bulletin.setDemNames(jsonObject.getString("dem_names").toUpperCase());
                         }catch(Exception ex){
-                            log.error("BulletinBL|fromJson| dem_names no pudo ser convertido a String, Objeto= " + jsonObject.toString() );
+                            log.warn(STR."***** fromJson| dem_names no pudo ser convertido a String, Objeto= \{jsonObject.toString()}");
                         }
                         break;
                     case "FCH_PRO":
@@ -258,7 +263,7 @@ public class BulletinBL {
                             OffsetDateTime odt1 = OffsetDateTime.parse(jsonObject.getString("FCH_PRO")); // "2024-09-10T00:00:00.000Z"
                             bulletin.setFechaPublicacion(Date.from(odt1.toInstant()));
                         } else {
-                            log.warn(String.format("***** BulletinBL|fromJson| Juzgado [%s], Expediente[%s], Cadena [%s], con valor: [%s] no tiene el formato [2024-09-10T00:00:00.000Z]",bulletin.getClaveJuzgado(), bulletin.getExpediente(), key, fecha1 ));
+                            log.warn(String.format("***** fromJson| Juzgado [%s], Expediente[%s], Cadena [%s], con valor: [%s] no tiene el formato [2024-09-10T00:00:00.000Z]",bulletin.getClaveJuzgado(), bulletin.getExpediente(), key, fecha1 ));
                         }
                         break;
                     case "FCH_ACU":
@@ -267,7 +272,7 @@ public class BulletinBL {
                             OffsetDateTime odt2 = OffsetDateTime.parse(jsonObject.getString("FCH_ACU"));
                             bulletin.setFechaAcuerdo(Date.from(odt2.toInstant()));
                         } else {
-                            log.warn(String.format("***** BulletinBL|fromJson| Juzgado [%s], Expediente[%s], Cadena [%s], con valor: [%s] no tiene el formato [2024-09-10T00:00:00.000Z]",bulletin.getClaveJuzgado(), bulletin.getExpediente(), key, fecha2 ));
+                            log.warn(String.format("***** fromJson| Juzgado [%s], Expediente[%s], Cadena [%s], con valor: [%s] no tiene el formato [2024-09-10T00:00:00.000Z]",bulletin.getClaveJuzgado(), bulletin.getExpediente(), key, fecha2 ));
                         }
                         break;
                     case "FCH_RES":
@@ -276,11 +281,11 @@ public class BulletinBL {
                             OffsetDateTime odt3 = OffsetDateTime.parse(jsonObject.getString("FCH_RES"));
                             bulletin.setFechaResolucion(Date.from(odt3.toInstant()));
                         } else {
-                            log.warn(String.format("***** BulletinBL|fromJson| Juzgado [%s], Expediente[%s], Cadena [%s], con valor: [%s] no tiene el formato [2024-09-10T00:00:00.000Z]",bulletin.getClaveJuzgado(), bulletin.getExpediente(), key, fecha3 ));
+                            log.warn(String.format("***** fromJson| Juzgado [%s], Expediente[%s], Cadena [%s], con valor: [%s] no tiene el formato [2024-09-10T00:00:00.000Z]",bulletin.getClaveJuzgado(), bulletin.getExpediente(), key, fecha3 ));
                         }
                         break;
                     default:
-                        log.warn("BulletinBL|fromJson| Cadena :" + key + ", No mapeado a un objeto");
+                        log.warn(STR."fromJson| Cadena :\{key}, No mapeado a un objeto");
                 }
             }
         }
@@ -337,26 +342,22 @@ public class BulletinBL {
 
 
     public void WriteFileToJson(String dir, BulletinME bulletinME,Exception e){
+        String fileName = String.format("%d_%s_%s_%s.json", bulletinME.getHttpQueryId(),bulletinME.getClaveJuicio(),bulletinME.getClaveJuzgado(),bulletinME.getExpediente().replaceAll("/","-")  );
+        File file = new File(STR."\{dir}/\{fileName}");
         try {
             final jakarta.json.JsonObjectBuilder objectBuilder = jakarta.json.Json.createObjectBuilder();
-            String fileName = String.format("%d_%s_%s_%s.json", bulletinME.getHttpQueryId(),bulletinME.getClaveJuicio(),bulletinME.getClaveJuzgado(),bulletinME.getExpediente().replaceAll("/","-")  );
-            File file = new File(dir + "/" + fileName);
-
             if (!file.exists()) {
                 file.createNewFile();
             }
-
             FileWriter fileWritter = new FileWriter(file, false);
             BufferedWriter bufferWritter = new BufferedWriter(fileWritter);
             objectBuilder.add("exceptionMessage", e.getMessage() );
             objectBuilder.add("fileName", file.getName() );
             objectBuilder.add("bulletin",bulletinME.toJSON() );
-
             bufferWritter.write( objectBuilder.build().toString() );
             bufferWritter.close();
-
         } catch (Exception ex) {
-            ex.printStackTrace();
+            log.error(STR."WriteFileToJson| Error al guardar el archivo en la ruta: \{file.getAbsoluteFile()}");
         }
     }
 }

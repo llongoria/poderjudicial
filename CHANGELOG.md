@@ -28,3 +28,6 @@ Caused by: java.lang.NullPointerException: date must not be null
 3. Se agrega index.jsp.
 4. Se agrega jboss-web.xml
 5. Se modifica el uso de los parametros para ser leidos desde ServerConfig.
+
+### PoderJudicial-21 1.0.5.20241003
+1. Se ajustan los mensajes informativos en las clases BulletinTimer y BulletinBL.
