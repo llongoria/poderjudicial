@@ -22,6 +22,7 @@
         <pattern>CASTILLO GUTIERREZ</pattern>
         <pattern>MONTES CASTILLO</pattern>
         <pattern>MERCADER CASTILLO</pattern>
+        <pattern>GONZALEZ VELAZQUEZ</pattern>
     </send_mail_pattern>
     <opensearch>
         <user>admin</user>
