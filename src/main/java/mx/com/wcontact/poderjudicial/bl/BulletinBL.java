@@ -20,6 +20,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.security.KeyManagementException;
 import java.security.NoSuchAlgorithmException;
+import java.text.Normalizer;
 import java.text.ParseException;
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -156,19 +157,16 @@ public class BulletinBL {
         try {
             getSession().persist(bulletin);
             if(bulletin.getIdBulletin() != null && bulletin.getIdBulletin() > 0){
-
-                if( checkPattern(
+                String pattern = checkPattern(
                         PJContextListener.getCfg().getSendMailPatterns(),
                         new String[]{ bulletin.getDemNames().toUpperCase(), bulletin.getActNames().toUpperCase() }
-                    ) ){
+                );
+                if( pattern != null ){
                     if( findNotification(bulletin.getIdBulletin() ) == null){
                         Notification notification = new Notification();
                         notification.setDestination("llongoria@wcontact.com.mx");
                         notification.setIdBulletin(bulletin.getIdBulletin());
-                        notification.setPattern(
-                                PJContextListener.getCfg().getSendMailPatterns().stream()
-                                        .collect(Collectors.joining(", "))
-                        );
+                        notification.setPattern( pattern );
                         notification.setType("EMAIL");
                         try{
                             SSMail mail = new SSMail();
@@ -221,7 +219,7 @@ public class BulletinBL {
                         break;
                     case "BOLETIN":
                         bulletin.setBoletin(
-                                ( jsonObject.getString("BOLETIN") != null ? jsonObject.getString("BOLETIN").toUpperCase()
+                                ( jsonObject.getString("BOLETIN") != null ? replaceNonASCII(jsonObject.getString("BOLETIN")).toUpperCase()
                                         : jsonObject.getString("BOLETIN") )
                         );
                         break;
@@ -245,16 +243,16 @@ public class BulletinBL {
                         break;
                     case "act_names":
                         try {
-                            bulletin.setActNames(jsonObject.getString("act_names").toUpperCase());
+                            bulletin.setActNames( replaceNonASCII(jsonObject.getString("act_names")).toUpperCase() );
                         }catch(Exception ex){
-                            log.warn("***** fromJson| act_names no pudo ser convertido a String, Objeto= " + jsonObject.toString() );
+                            log.warn("***** fromJson| act_names no pudo ser convertido a String, Objeto= %s".formatted( jsonObject ) );
                         }
                         break;
                     case "dem_names":
                         try {
-                            bulletin.setDemNames(jsonObject.getString("dem_names").toUpperCase());
+                            bulletin.setDemNames(replaceNonASCII(jsonObject.getString("dem_names")).toUpperCase());
                         }catch(Exception ex){
-                            log.warn(STR."***** fromJson| dem_names no pudo ser convertido a String, Objeto= \{jsonObject.toString()}");
+                            log.warn("***** fromJson| dem_names no pudo ser convertido a String, Objeto= %s".formatted(jsonObject));
                         }
                         break;
                     case "FCH_PRO":
@@ -285,7 +283,7 @@ public class BulletinBL {
                         }
                         break;
                     default:
-                        log.warn(STR."fromJson| Cadena :\{key}, No mapeado a un objeto");
+                        log.warn("fromJson| Cadena: %s, No mapeado a un objeto".formatted(key));
                 }
             }
         }
@@ -300,11 +298,12 @@ public class BulletinBL {
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSS'Z'");
 
         try {
-            LocalDate.parse(dateString, formatter);
+            LocalDate dateParser = LocalDate.parse(dateString, formatter);
+            return Fecha.isBetweenSqlServerDates(dateParser);
+
         } catch (DateTimeParseException e) {
             return false;
         }
-        return true;
     }
 
 
@@ -320,30 +319,31 @@ public class BulletinBL {
                     cb.equal(root.get("idBulletin"), idBulletin)
             );
             list = getSession().createQuery(cq).getResultList();
-        } finally {
-            close();
-        }
+        } finally {  }
         return list.isEmpty() ? null : list.getFirst();
     }
 
-    public boolean checkPattern(List<String> patterns, String[] data){
+    public String checkPattern(List<String> patterns, String[] data){
         List<String> datas = Arrays.stream(data).toList();
         for(String ele: datas){
             for(String pattern: patterns){
                 if(ele.contains(pattern)){
-                    return true;
+                    return pattern;
                 }
             }
         }
-        return false;
+        return null;
     }
 
-
+    public String replaceNonASCII(String input) {
+        String normalize = Normalizer.normalize(input, Normalizer.Form.NFD);
+        return normalize.replaceAll("[^\\p{ASCII}]", "");
+    }
 
 
     public void WriteFileToJson(String dir, BulletinME bulletinME,Exception e){
         String fileName = String.format("%d_%s_%s_%s.json", bulletinME.getHttpQueryId(),bulletinME.getClaveJuicio(),bulletinME.getClaveJuzgado(),bulletinME.getExpediente().replaceAll("/","-")  );
-        File file = new File(STR."\{dir}/\{fileName}");
+        File file = new File("%s/%s".formatted(dir,fileName));
         try {
             final jakarta.json.JsonObjectBuilder objectBuilder = jakarta.json.Json.createObjectBuilder();
             if (!file.exists()) {
@@ -357,7 +357,7 @@ public class BulletinBL {
             bufferWritter.write( objectBuilder.build().toString() );
             bufferWritter.close();
         } catch (Exception ex) {
-            log.error(STR."WriteFileToJson| Error al guardar el archivo en la ruta: \{file.getAbsoluteFile()}");
+            log.error("WriteFileToJson| Error al guardar el archivo en la ruta: %s".formatted(file.getAbsoluteFile()));
         }
     }
 }

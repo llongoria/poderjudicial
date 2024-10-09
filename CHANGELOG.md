@@ -31,3 +31,8 @@ Caused by: java.lang.NullPointerException: date must not be null
 
 ### PoderJudicial-21 1.0.5.20241003
 1. Se ajustan los mensajes informativos en las clases BulletinTimer y BulletinBL.
+
+### PoderJudicial-21 1.0.6.20241009
+1. Se utilizan solo caracteres de tipo ascii y se remplazan las vocales con acentos.
+2. Se establece una fecha minimima y una fecha maxima para los boletines.
+3. Se modifica el servicio rest refactorME para recibir como parametro la fecha inicial de refactorizacion.

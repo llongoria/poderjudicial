@@ -6,6 +6,7 @@ import jakarta.json.JsonArrayBuilder;
 import jakarta.json.JsonObject;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -17,7 +18,9 @@ import mx.com.wcontact.poderjudicial.listener.PJContextListener;
 import mx.com.wcontact.poderjudicial.util.Fecha;
 import mx.com.wcontact.poderjudicial.util.Result;
 
+import java.text.ParseException;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
@@ -42,12 +45,30 @@ public class AdminRest {
     }
 
     @GET
-    @Path("refactorME")
+    @Path("refactorME/{dateStr}")
     @Produces({ MediaType.APPLICATION_JSON})
-    public jakarta.ws.rs.core.Response refactorME() {
+    public jakarta.ws.rs.core.Response refactorME(@PathParam("dateStr") String dateStr) {
+        java.text.SimpleDateFormat sdfDate = new java.text.SimpleDateFormat("yyyy-MM-dd");
+        LocalDate localInitialDate = initialDate;
+        try {
+            localInitialDate = sdfDate.parse(dateStr).toInstant()
+                    .atZone(ZoneId.systemDefault())
+                    .toLocalDate();
+        } catch (ParseException ex) {
+            log.error(ex);
+            JsonObject jsonObject = Json.createObjectBuilder()
+                    .add("status", "ERROR")
+                    .add("message", "La fecha [%s] tiene un formato incorrecto, por favor ingresa el formato: [yyyy-MM-dd]".formatted(dateStr) )
+                    .build();
+            return Response.status( Response.Status.BAD_REQUEST.getStatusCode(),
+                    ex.getMessage()
+            ).entity(jsonObject).build();
+        }
+
+
 
         BulletinBL bulletinBL = null;
-        List<LocalDate> listDates = Fecha.getDatesBetween(initialDate, LocalDate.now() );
+        List<LocalDate> listDates = Fecha.getDatesBetween(localInitialDate, LocalDate.now() );
 
         JudgeBL judgeBL = null;
         List<Judge> listJudge = null;
