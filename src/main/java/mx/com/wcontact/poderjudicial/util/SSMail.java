@@ -14,17 +14,15 @@ public class SSMail {
 
     private static final org.jboss.logging.Logger log = org.jboss.logging.Logger.getLogger(BulletinBL.class.getName());
 
-    private String username;
-    private String password;
     Properties prop = new Properties();
     private Message message = null;
 
     public SSMail() {
-        username = PJContextListener.getCfg().getMailUser();
-        password = PJContextListener.getCfg().getMailPassword();
         prop.put("mail.smtp.host", PJContextListener.getCfg().getMailSmtpHost());
         prop.put("mail.smtp.port", PJContextListener.getCfg().getMailSmtpPort());
         prop.put("mail.smtp.auth", PJContextListener.getCfg().isMailSmtpAuth());
+        //prop.put("mail.smtp.socketFactory.port", PJContextListener.getCfg().getMailSmtpPort());
+        //prop.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
         prop.put("mail.smtp.starttls.enable", PJContextListener.getCfg().isMailUseSsl()); //TLS
     }
 
@@ -34,14 +32,14 @@ public class SSMail {
         Session session = Session.getInstance(prop,
                 new jakarta.mail.Authenticator() {
                     protected PasswordAuthentication getPasswordAuthentication() {
-                        return new PasswordAuthentication(username, password);
+                        return new PasswordAuthentication(PJContextListener.getCfg().getMailUser(), PJContextListener.getCfg().getMailPassword());
                     }
                 });
 
         try {
 
             this.message = new MimeMessage(session);
-            this.message.setFrom(new InternetAddress(username)); // reemplazar con tu correo de Gmail
+            this.message.setFrom(new InternetAddress(PJContextListener.getCfg().getMailFrom())); // reemplazar con tu correo de Gmail
             this.message.setRecipients( Message.RecipientType.TO, InternetAddress.parse(mailTo)  );
             this.message.setRecipients( Message.RecipientType.BCC, InternetAddress.parse( PJContextListener.getCfg().getMailFrom()) );
             this.message.setSubject(subject);

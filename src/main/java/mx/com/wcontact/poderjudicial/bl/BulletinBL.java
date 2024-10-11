@@ -162,7 +162,7 @@ public class BulletinBL {
                         new String[]{ bulletin.getDemNames().toUpperCase(), bulletin.getActNames().toUpperCase() }
                 );
                 if( pattern != null ){
-                    if( findNotification(bulletin.getIdBulletin() ) == null){
+                    if( findNotification( bulletin.getIdBulletin() ) == null){
                         Notification notification = new Notification();
                         notification.setDestination("llongoria@wcontact.com.mx");
                         notification.setIdBulletin(bulletin.getIdBulletin());
@@ -178,7 +178,11 @@ public class BulletinBL {
                             try {
                                 mail.sendMessage();
                                 notification.setSuccess(1);
-                            } catch (MessagingException e) {
+                            } catch (jakarta.mail.AuthenticationFailedException ex) {
+                                log.error("save| Error al enviar el correo, la notificacion sera marcada como success 0. User: [%s], Pass:[%s]".formatted(PJContextListener.getCfg().getMailUser(), PJContextListener.getCfg().getMailPassword()), ex);
+                                notification.setSuccess(0);
+                            } catch(MessagingException ex) {
+                                log.error("save| Error al enviar el correo, la notificacion sera marcada como success 0.", ex);
                                 notification.setSuccess(0);
                             }
 
@@ -194,6 +198,8 @@ public class BulletinBL {
                 }
                 transaction.commit();
                 return;
+            } else {
+                log.warn("save| El boletin %s no tiene un id, se realizara rollback de la transaction.".formatted(bulletin.getExpediente()));
             }
             transaction.rollback();
         } catch(Exception ex){
@@ -316,7 +322,10 @@ public class BulletinBL {
             Root<Notification> root = cq.from(Notification.class);
             cq.select(root);
             cq.where(
-                    cb.equal(root.get("idBulletin"), idBulletin)
+                    cb.and(
+                        cb.equal(root.get("idBulletin"), idBulletin),
+                        cb.equal(root.get("success"),1)
+                    )
             );
             list = getSession().createQuery(cq).getResultList();
         } finally {  }

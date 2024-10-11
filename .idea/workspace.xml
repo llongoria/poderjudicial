@@ -10,6 +10,11 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae3536cf-af87-42a0-a109-24e190bf8376" name="Changes" comment="PoderJudicial-21 1.0.6.20241009">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/SSMail.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/SSMail.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/resources/pj_config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/pj_config.xml" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -130,7 +135,9 @@
       <workItem from="1727707290211" duration="10442000" />
       <workItem from="1727846900972" duration="923000" />
       <workItem from="1727966317776" duration="1573000" />
-      <workItem from="1728487806779" duration="6817000" />
+      <workItem from="1728487806779" duration="7092000" />
+      <workItem from="1728572798615" duration="2689000" />
+      <workItem from="1728663463533" duration="5322000" />
     </task>
     <task id="LOCAL-00001" summary="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion.">
       <option name="closed" value="true" />
@@ -188,7 +195,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728498005132</updated>
     </task>
-    <option name="localTasksCounter" value="8" />
+    <task id="LOCAL-00008" summary="PoderJudicial-21 1.0.6.20241009">
+      <option name="closed" value="true" />
+      <created>1728498326459</created>
+      <option name="number" value="00008" />
+      <option name="presentableId" value="LOCAL-00008" />
+      <option name="project" value="LOCAL" />
+      <updated>1728498326459</updated>
+    </task>
+    <option name="localTasksCounter" value="9" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

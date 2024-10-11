@@ -36,3 +36,7 @@ Caused by: java.lang.NullPointerException: date must not be null
 1. Se utilizan solo caracteres de tipo ascii y se remplazan las vocales con acentos.
 2. Se establece una fecha minimima y una fecha maxima para los boletines.
 3. Se modifica el servicio rest refactorME para recibir como parametro la fecha inicial de refactorizacion.
+
+### PoderJudicial-21 1.0.7.20241011
+1. Se corrije la contraseña del correo electronico.
+2. Se agregan mensajes informativos en caso de falla en el envio de correo electronico.
