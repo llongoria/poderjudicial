@@ -10,41 +10,24 @@ import org.hibernate.query.criteria.HibernateCriteriaBuilder;
 
 import java.util.List;
 
-public class HttpQueryBL {
+public class HttpQueryBL extends AbstractBL{
 
     private static final String PATH_DIR_BULLETINERROR = "/home/llongoria/PoderJudicial/BulletinError";
     private static final org.jboss.logging.Logger log = org.jboss.logging.Logger.getLogger(HttpQueryBL.class.getName());
-    private final transient java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    private org.hibernate.Session hibernateSession;
+
+    public HttpQueryBL(org.hibernate.Session session){
+        super(session);
+    }
 
     public HttpQueryBL(){
-
+        super();
     }
-
-    public org.hibernate.Transaction createTransaction() {
-        return getSession().beginTransaction();
-    }
-
-    public org.hibernate.Session getSession(){
-        if ( hibernateSession == null){
-            hibernateSession = HibernateUtil.getSessionFactory().openSession();
-        }
-        return hibernateSession;
-    }
-
-    public void close(){
-        if( hibernateSession != null){
-            hibernateSession.close();
-            hibernateSession = null;
-        }
-    }
-
 
     public Result<HttpQuery> save(HttpQuery httpQuery, boolean isOpenSearchActive) {
         Transaction transaction = createTransaction();
         getSession().persist(httpQuery);
         transaction.commit();
-        this.close();
+
 
         if(isOpenSearchActive){
             HttpQueryOS httpQueryOS = null;
@@ -76,9 +59,7 @@ public class HttpQueryBL {
                     )
             );
             list = getSession().createQuery(cq).getResultList();
-        }finally {
-            close();
-        }
+        }finally {  }
         return list.isEmpty() ? null : list.getFirst();
     }
 
@@ -92,9 +73,7 @@ public class HttpQueryBL {
                     cb.greaterThan(root.get("total"), 0)
             );
             return getSession().createQuery(cq).getResultList();
-        } finally {
-            close();
-        }
+        } finally { }
     }
 
 }

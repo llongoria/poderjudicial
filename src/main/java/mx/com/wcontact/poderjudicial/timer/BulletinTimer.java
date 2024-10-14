@@ -41,14 +41,10 @@ public class BulletinTimer {
             allList = judgeBL.findINvalue( ZM_MERCANTIL_VALUES );
         } catch (Exception ex){
             log.error(ex);
-        } finally {
-            if(judgeBL != null){
-                judgeBL.close();
-            }
         }
-        log.info("execute| Numero Total de Juzgados Encontrados: " + allList.size());
+        log.info("execute| Numero Total de Juzgados Encontrados: %d".formatted( allList.size() ) );
 
-        BulletinBL bulletinBL = new BulletinBL();
+        BulletinBL bulletinBL = new BulletinBL( judgeBL.getSession() );
 
         int state0 = 0;
         int state1 = 0;
@@ -74,7 +70,8 @@ public class BulletinTimer {
 
 
         } finally {
-            log.info(STR."****************** execute| end running, State0: \{state0}, State1: \{state1} ******************");
+            log.info("****************** execute| end running, State0: %d, State1: %d ******************".formatted(state0, state1) );
+            bulletinBL.close();
         }
     }
 

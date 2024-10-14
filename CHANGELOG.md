@@ -40,3 +40,6 @@ Caused by: java.lang.NullPointerException: date must not be null
 ### PoderJudicial-21 1.0.7.20241011
 1. Se corrije la contraseña del correo electronico.
 2. Se agregan mensajes informativos en caso de falla en el envio de correo electronico.
+
+### PoderJudicial-21 1.0.8.20241014
+1. Se agrega la clase AbstractBL.java para las clases de bussiness logic.

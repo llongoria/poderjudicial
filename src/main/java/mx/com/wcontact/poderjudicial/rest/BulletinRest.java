@@ -38,26 +38,31 @@ public class BulletinRest {
     @Produces("text/plain")
     public String runQuery(@PathParam("judged") String judged, @PathParam("date") String date) {
         Judge judge = null;
-        JudgeBL judgeBL = new JudgeBL();
+        JudgeBL judgeBL = null;
         try{
-           judge = judgeBL.findCountJudge(judged);
+            judgeBL = new JudgeBL();
+            judge = judgeBL.findCountJudge(judged);
         } catch(Exception ex) {
+            if( judgeBL != null) {
+                judgeBL.close();
+            }
             log.error("BulletinRest|runQuery|findCountJudge| Error al ejecutar bulletinBL", ex);
             return ex.getMessage();
         }
 
-
-
-        BulletinBL bulletinBL = new BulletinBL();
+        BulletinBL bulletinBL  = null;
 
         String response = null;
         try {
-
-
+            bulletinBL = new BulletinBL(judgeBL.getSession());
             Result<HttpQuery> result = bulletinBL.runQuery(judged, date, judge.getParam(), PJContextListener.getCfg().isIndexOpenSearch() );
         } catch (Exception ex){
             log.error("BulletinRest|runQuery|runQuery| Error al ejecutar bulletinBL", ex);
             response = ex.getMessage();
+        } finally {
+            if( judgeBL != null) {
+                judgeBL.close();
+            }
         }
         return response;
     }
@@ -67,7 +72,7 @@ public class BulletinRest {
     public jakarta.ws.rs.core.Response httpquery() {
         HttpQueryBL httpQueryBL = null;
         try {
-            httpQueryBL = new HttpQueryBL( );
+            httpQueryBL = new HttpQueryBL();
             List<HttpQuery> countDevices = httpQueryBL.findCountHttpQuery();
             JsonObject jsonObject = Json.createObjectBuilder()
                     .add("type", "httpquery")
@@ -90,6 +95,9 @@ public class BulletinRest {
             ).entity(jsonObject).build();
 
         } finally {
+            if(httpQueryBL != null){
+                httpQueryBL.close();
+            }
 
         }
     }

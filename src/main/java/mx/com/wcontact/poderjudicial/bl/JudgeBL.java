@@ -17,24 +17,18 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 
-public class JudgeBL {
+public final class JudgeBL extends AbstractBL{
 
     private static final org.jboss.logging.Logger log = org.jboss.logging.Logger.getLogger(JudgeBL.class.getName());
-    private org.hibernate.Session session;
-
-    public JudgeBL(){
-        session = HibernateUtil.getSessionFactory().openSession();
-    }
 
     public JudgeBL(org.hibernate.Session session){
-        this.session = session;
+        super(session);
     }
 
-    public void close(){
-        if(session != null){
-            session.close();
-        }
+    public JudgeBL(){
+        super();
     }
+
 
     public String runQuery(String type) {
         CustomHttpUrlConnection http = new CustomHttpUrlConnection();
@@ -81,10 +75,10 @@ public class JudgeBL {
     private void updateTableJudge(List<Judge> list){
 
         try {
-            Transaction transaction = session.beginTransaction();
+            Transaction transaction = createTransaction();
             for(Judge judge : list){
                 if(findCountJudge(judge.getValue()) == null) {
-                    session.persist(judge);
+                    getSession().persist(judge);
                 }
             }
             transaction.commit();
@@ -95,38 +89,38 @@ public class JudgeBL {
     }
 
     public Judge findCountJudge(String value) {
-        HibernateCriteriaBuilder cb = session.getCriteriaBuilder();
+        HibernateCriteriaBuilder cb = getSession().getCriteriaBuilder();
         jakarta.persistence.criteria.CriteriaQuery<Judge> cq = cb.createQuery(Judge.class);
         Root<Judge> root = cq.from(Judge.class);
         cq.select(root);
         cq.where(
                 cb.equal(root.get("value"), value)
         );
-        List<Judge> list = session.createQuery(cq).getResultList();
+        List<Judge> list = getSession().createQuery(cq).getResultList();
         return  list.isEmpty() ? null : list.getFirst();
     }
 
     public List<Judge> findAll(){
-        HibernateCriteriaBuilder cb = session.getCriteriaBuilder();
+        HibernateCriteriaBuilder cb = getSession().getCriteriaBuilder();
         jakarta.persistence.criteria.CriteriaQuery<Judge> cq = cb.createQuery(Judge.class);
         cq.select(cq.from(Judge.class));
-        return session.createQuery(cq).getResultList();
+        return getSession().createQuery(cq).getResultList();
     }
 
     public List<Judge> findINvalue(Object[] columns){
-        HibernateCriteriaBuilder cb = session.getCriteriaBuilder();
+        HibernateCriteriaBuilder cb = getSession().getCriteriaBuilder();
         jakarta.persistence.criteria.CriteriaQuery<Judge> cq = cb.createQuery(Judge.class);
         Root<Judge> root = cq.from(Judge.class);
         cq.select(root);
         cq.where(root.get("value").in(columns));
-        return session.createQuery(cq).getResultList();
+        return getSession().createQuery(cq).getResultList();
     }
 
     public List<Object[]> findCountJudges() {
         String sql = "SELECT type, COUNT(idJudge) as total\n" +
                 "FROM [PoderJudicial].[dbo].[judged]\n" +
                 "GROUP BY (type) ORDER BY type;";
-        Query query = session.createNativeQuery(sql);
+        Query query = getSession().createNativeQuery(sql);
         return query.getResultList();
 
     }
@@ -148,7 +142,6 @@ public class JudgeBL {
         } else {
             judge.setName(defStr);
         }
-        /** *** */
 
         if(jsonObject.containsKey("secretary") && !jsonObject.isNull("secretary")) {
             judge.setSecretary(jsonObject.getString("secretary"));

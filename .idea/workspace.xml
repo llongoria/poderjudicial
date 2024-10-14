@@ -9,13 +9,16 @@
     <option name="autoReloadType" value="SELECTIVE" />
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="ae3536cf-af87-42a0-a109-24e190bf8376" name="Changes" comment="PoderJudicial-21 1.0.6.20241009">
+    <list default="true" id="ae3536cf-af87-42a0-a109-24e190bf8376" name="Changes" comment="PoderJudicial-21 1.0.7.20241011">
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/AbstractBL.java" afterDir="false" />
+      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/NotificacionBL.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/pom.xml" beforeDir="false" afterPath="$PROJECT_DIR$/pom.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/SSMail.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/SSMail.java" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/src/main/resources/pj_config.xml" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/resources/pj_config.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/HttpQueryBL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/HttpQueryBL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/JudgeBL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/JudgeBL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/BulletinRest.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/rest/BulletinRest.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/timer/BulletinTimer.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/timer/BulletinTimer.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -25,8 +28,8 @@
   <component name="FileTemplateManagerImpl">
     <option name="RECENT_TEMPLATES">
       <list>
-        <option value="Class" />
         <option value="Jsp File" />
+        <option value="Class" />
       </list>
     </option>
   </component>
@@ -51,25 +54,27 @@
     <option name="hideEmptyMiddlePackages" value="true" />
     <option name="showLibraryContents" value="true" />
   </component>
-  <component name="PropertiesComponent">{
-  &quot;keyToString&quot;: {
-    &quot;ASKED_ADD_EXTERNAL_FILES&quot;: &quot;true&quot;,
-    &quot;RunOnceActivity.ShowReadmeOnStart&quot;: &quot;true&quot;,
-    &quot;SHARE_PROJECT_CONFIGURATION_FILES&quot;: &quot;true&quot;,
-    &quot;git-widget-placeholder&quot;: &quot;master&quot;,
-    &quot;kotlin-language-version-configured&quot;: &quot;true&quot;,
-    &quot;last_opened_file_path&quot;: &quot;/Users/llongoria/JAVA/WContact/PoderJudicial/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl&quot;,
-    &quot;node.js.detected.package.eslint&quot;: &quot;true&quot;,
-    &quot;node.js.detected.package.tslint&quot;: &quot;true&quot;,
-    &quot;node.js.selected.package.eslint&quot;: &quot;(autodetect)&quot;,
-    &quot;node.js.selected.package.tslint&quot;: &quot;(autodetect)&quot;,
-    &quot;nodejs_package_manager_path&quot;: &quot;npm&quot;,
-    &quot;project.structure.last.edited&quot;: &quot;Global Libraries&quot;,
-    &quot;project.structure.proportion&quot;: &quot;0.0&quot;,
-    &quot;project.structure.side.proportion&quot;: &quot;0.37816092&quot;,
-    &quot;vue.rearranger.settings.migration&quot;: &quot;true&quot;
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "ASKED_ADD_EXTERNAL_FILES": "true",
+    "Notification.DisplayName-DoNotAsk-Database detector": "Database detector",
+    "Notification.DoNotAsk-Database detector": "true",
+    "RunOnceActivity.ShowReadmeOnStart": "true",
+    "SHARE_PROJECT_CONFIGURATION_FILES": "true",
+    "git-widget-placeholder": "master",
+    "kotlin-language-version-configured": "true",
+    "last_opened_file_path": "/Users/llongoria/JAVA/WContact/PoderJudicial/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl",
+    "node.js.detected.package.eslint": "true",
+    "node.js.detected.package.tslint": "true",
+    "node.js.selected.package.eslint": "(autodetect)",
+    "node.js.selected.package.tslint": "(autodetect)",
+    "nodejs_package_manager_path": "npm",
+    "project.structure.last.edited": "Global Libraries",
+    "project.structure.proportion": "0.0",
+    "project.structure.side.proportion": "0.37816092",
+    "vue.rearranger.settings.migration": "true"
   }
-}</component>
+}]]></component>
   <component name="RecentsManager">
     <key name="CopyFile.RECENT_KEYS">
       <recent name="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/opensearch/bl" />
@@ -137,7 +142,8 @@
       <workItem from="1727966317776" duration="1573000" />
       <workItem from="1728487806779" duration="7092000" />
       <workItem from="1728572798615" duration="2689000" />
-      <workItem from="1728663463533" duration="5322000" />
+      <workItem from="1728663463533" duration="5345000" />
+      <workItem from="1728930422492" duration="5699000" />
     </task>
     <task id="LOCAL-00001" summary="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion.">
       <option name="closed" value="true" />
@@ -203,7 +209,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728498326459</updated>
     </task>
-    <option name="localTasksCounter" value="9" />
+    <task id="LOCAL-00009" summary="PoderJudicial-21 1.0.7.20241011">
+      <option name="closed" value="true" />
+      <created>1728690826383</created>
+      <option name="number" value="00009" />
+      <option name="presentableId" value="LOCAL-00009" />
+      <option name="project" value="LOCAL" />
+      <updated>1728690826383</updated>
+    </task>
+    <option name="localTasksCounter" value="10" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">
@@ -217,6 +231,7 @@
     <MESSAGE value="PoderJudicial-21 1.0.4.20240930" />
     <MESSAGE value="PoderJudicial-21 1.0.5.20241003" />
     <MESSAGE value="PoderJudicial-21 1.0.6.20241009" />
-    <option name="LAST_COMMIT_MESSAGE" value="PoderJudicial-21 1.0.6.20241009" />
+    <MESSAGE value="PoderJudicial-21 1.0.7.20241011" />
+    <option name="LAST_COMMIT_MESSAGE" value="PoderJudicial-21 1.0.7.20241011" />
   </component>
 </project>

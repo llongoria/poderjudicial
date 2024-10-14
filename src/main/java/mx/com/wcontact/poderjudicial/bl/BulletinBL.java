@@ -32,42 +32,25 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
-public class BulletinBL {
+public class BulletinBL extends AbstractBL{
 
     private static final String PATH_DIR_BULLETINERROR = "/home/llongoria/PoderJudicial/BulletinError";
     private static final org.jboss.logging.Logger log = org.jboss.logging.Logger.getLogger(BulletinBL.class.getName());
     private final transient java.text.SimpleDateFormat sdf = new java.text.SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-    private org.hibernate.Session hibernateSession;
-
-    public BulletinBL(){}
-
-
-    public org.hibernate.Transaction createTransaction() {
-        return getSession().beginTransaction();
+    public BulletinBL(){
+        super();
     }
 
-    public org.hibernate.Session getSession(){
-        if ( hibernateSession == null || !hibernateSession.isOpen()){
-            hibernateSession = HibernateUtil.getSessionFactory().openSession();
-        }
-        return hibernateSession;
+    public BulletinBL(org.hibernate.Session session){
+        super(session);
     }
-
-    public void close(){
-        if( hibernateSession != null){
-            hibernateSession.close();
-            hibernateSession = null;
-        }
-    }
-
-
 
     public Result<HttpQuery> runQuery(String judged, String date, String paramDate, boolean isOpenSearchActive) {
         String url =  "bulletin/"+paramDate;
         int resultStateHttpquery = 0;
         CustomHttpUrlConnection http = new CustomHttpUrlConnection();
-        HttpQueryBL httpQueryBL = new HttpQueryBL();
+        HttpQueryBL httpQueryBL = new HttpQueryBL(getSession());
         try {
             HttpQuery httpQuery = httpQueryBL.existsHttpQuery(judged,date);
             if(httpQuery != null){
@@ -153,6 +136,7 @@ public class BulletinBL {
     }
 
     private void save(BulletinME bulletin, BulletinMeOS bulletinMeOS){
+       NotificacionBL notificacionBL = new NotificacionBL(getSession());
         Transaction transaction = createTransaction();
         try {
             getSession().persist(bulletin);
@@ -162,7 +146,7 @@ public class BulletinBL {
                         new String[]{ bulletin.getDemNames().toUpperCase(), bulletin.getActNames().toUpperCase() }
                 );
                 if( pattern != null ){
-                    if( findNotification( bulletin.getIdBulletin() ) == null){
+                    if( notificacionBL.findNotification( bulletin.getIdBulletin() ) == null){
                         Notification notification = new Notification();
                         notification.setDestination("llongoria@wcontact.com.mx");
                         notification.setIdBulletin(bulletin.getIdBulletin());
@@ -314,23 +298,7 @@ public class BulletinBL {
 
 
 
-    public Notification findNotification(Long idBulletin){
-        List<Notification> list = null;
-        try {
-            HibernateCriteriaBuilder cb = getSession().getCriteriaBuilder();
-            jakarta.persistence.criteria.CriteriaQuery<Notification> cq = cb.createQuery(Notification.class);
-            Root<Notification> root = cq.from(Notification.class);
-            cq.select(root);
-            cq.where(
-                    cb.and(
-                        cb.equal(root.get("idBulletin"), idBulletin),
-                        cb.equal(root.get("success"),1)
-                    )
-            );
-            list = getSession().createQuery(cq).getResultList();
-        } finally {  }
-        return list.isEmpty() ? null : list.getFirst();
-    }
+
 
     public String checkPattern(List<String> patterns, String[] data){
         List<String> datas = Arrays.stream(data).toList();
