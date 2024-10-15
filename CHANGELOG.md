@@ -43,3 +43,4 @@ Caused by: java.lang.NullPointerException: date must not be null
 
 ### PoderJudicial-21 1.0.8.20241014
 1. Se agrega la clase AbstractBL.java para las clases de bussiness logic.
+2. Se agrega la clase PJWebSocket.java para mostrar activar los websockets.
