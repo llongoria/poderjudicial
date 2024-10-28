@@ -10,9 +10,10 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="ae3536cf-af87-42a0-a109-24e190bf8376" name="Changes" comment="PoderJudicial-21 1.0.8.20241014">
-      <change afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/websocket/PJWebSocket.java" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/CHANGELOG.md" beforeDir="false" afterPath="$PROJECT_DIR$/CHANGELOG.md" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/bl/BulletinBL.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/CustomHttpUrlConnection.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/mx/com/wcontact/poderjudicial/util/CustomHttpUrlConnection.java" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -138,7 +139,9 @@
       <workItem from="1728572798615" duration="2689000" />
       <workItem from="1728663463533" duration="5345000" />
       <workItem from="1728930422492" duration="7425000" />
-      <workItem from="1728965266180" duration="1218000" />
+      <workItem from="1728965266180" duration="1336000" />
+      <workItem from="1729011766289" duration="2254000" />
+      <workItem from="1730131673413" duration="1037000" />
     </task>
     <task id="LOCAL-00001" summary="PoderJudicial-21 1.0.1 20240924 Primera Version ingresada a produccion.">
       <option name="closed" value="true" />
@@ -220,7 +223,15 @@
       <option name="project" value="LOCAL" />
       <updated>1728942534171</updated>
     </task>
-    <option name="localTasksCounter" value="11" />
+    <task id="LOCAL-00011" summary="PoderJudicial-21 1.0.8.20241014">
+      <option name="closed" value="true" />
+      <created>1728966645324</created>
+      <option name="number" value="00011" />
+      <option name="presentableId" value="LOCAL-00011" />
+      <option name="project" value="LOCAL" />
+      <updated>1728966645324</updated>
+    </task>
+    <option name="localTasksCounter" value="12" />
     <servers />
   </component>
   <component name="TypeScriptGeneratedFilesManager">

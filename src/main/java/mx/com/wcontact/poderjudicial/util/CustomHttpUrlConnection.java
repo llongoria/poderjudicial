@@ -65,10 +65,8 @@ public class CustomHttpUrlConnection {
                 //System.out.println(response.toString());
                 return response.toString();
             } else {
-                log.warn("GET request did not work.");
+                log.warn("sendGET| GET request did not work.");
             }
-        } catch(Exception ex) {
-            log.error(ex);
         } finally {
             if(https != null) { https.disconnect(); }
         }

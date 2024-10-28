@@ -114,7 +114,7 @@ public class BulletinBL extends AbstractBL{
 
             return new Result<HttpQuery>(resultStateHttpquery, httpQuery, "***** runQuery| Success: "+ listBulletin.size() +" *****");
 
-        } catch (IOException | NoSuchAlgorithmException | KeyManagementException | ParseException e) {
+        } catch (IOException | NoSuchAlgorithmException | KeyManagementException | ParseException  e) {
             log.error(e);
         } finally {
             log.info("***** runQuery|  runQuery end *****");
