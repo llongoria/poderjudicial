@@ -23,7 +23,7 @@ openssl pkcs12 -export -name admin -in admin.pem  -inkey Wwc3-DNS-CA.key.pem -ou
 
 Generar solicitud
 
-sudo openssl req -new-key private.key -subj"/C=MX/ST=Jalisco/L=Guadalajara/O=Web Contact/OU=Seguridad de la Informacion/CN=admin" -out admin.csr
+sudo openssl req -new-key private.key -subj"/C=MX/ST=Jalisco/L=Guadalajara/O=WWW·/OU=Seguridad de la Informacion/CN=admin" -out admin.csr
 
 convertir cer to pem: openssl x509 -inform der -in admin.der -out admin.pem
 
