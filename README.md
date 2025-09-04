@@ -95,7 +95,7 @@ You can also upload existing files from your computer using the instructions bel
 
 ### Create a new repository
 
-- git clone https://llongoria@gitee.Wwc3.com.mx/web-contact/poderjudicial/backend.git
+- git clone https://llongoria@github.com/web-contact/poderjudicial/backend.git
 - cd backend
 - git switch --create main
 - touch README.md
@@ -107,7 +107,7 @@ You can also upload existing files from your computer using the instructions bel
 
 - cd existing_folder
 - git init --initial-branch=main
-- git remote add origin https://llongoria@gitee.Wwc3.com.mx/web-contact/poderjudicial/backend.git
+- git remote add origin https://llongoria@github.com/web-contact/poderjudicial/backend.git
 - git add .
 - git commit -m "Initial commit"
 - git push --set-upstream origin main
@@ -116,6 +116,6 @@ You can also upload existing files from your computer using the instructions bel
 
 - cd existing_repo
 - git remote rename origin old-origin
-- git remote add origin https://llongoria@gitee.Wwc3.com.mx/web-contact/poderjudicial/backend.git
+- git remote add origin https://llongoria@github.com/web-contact/poderjudicial/backend.git
 - git push --set-upstream origin --all
 - git push --set-upstream origin --tags
